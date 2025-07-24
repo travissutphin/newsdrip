@@ -9,48 +9,62 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(210, 20%, 98%);
-  --foreground: hsl(220, 13%, 9%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215, 16%, 47%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(220, 13%, 9%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(220, 13%, 9%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(217, 91%, 60%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(142, 76%, 36%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(248, 95%, 70%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(217, 91%, 60%);
+  /* Brand Colors */
+  --orange: 222 102 0;           /* #de6600 - CTA, buttons */
+  --light-orange: 254 198 130;   /* #fec682 - Accent background, highlights */
+  --mint: 183 230 211;           /* #b7e6d3 - Section backgrounds, subtle dividers */
+  --sage-green: 138 177 132;     /* #8ab184 - Icons, badges, secondary CTA */
+  --deep-navy: 0 63 90;          /* #003f5a - Headings, footer, body text */
+  
+  /* Theme Variables */
+  --background: hsl(var(--light-orange) / 0.1);
+  --foreground: hsl(var(--deep-navy));
+  --muted: hsl(var(--mint) / 0.3);
+  --muted-foreground: hsl(var(--deep-navy) / 0.7);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(var(--deep-navy));
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(var(--deep-navy));
+  --border: hsl(var(--mint) / 0.5);
+  --input: hsl(var(--mint) / 0.3);
+  --primary: hsl(var(--orange));
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(var(--sage-green));
+  --secondary-foreground: hsl(0 0% 100%);
+  --accent: hsl(var(--light-orange));
+  --accent-foreground: hsl(var(--deep-navy));
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --ring: hsl(var(--orange));
   --radius: 0.5rem;
+  
+  /* Custom Brand Variables */
+  --header-bg: hsl(var(--deep-navy));
+  --hero-bg: hsl(var(--light-orange));
+  --section-bg: hsl(var(--mint) / 0.2);
+  --footer-bg: hsl(var(--deep-navy));
 }
 
 .dark {
-  --background: hsl(224, 71%, 4%);
-  --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(223, 47%, 11%);
-  --muted-foreground: hsl(215, 16%, 57%);
-  --popover: hsl(224, 71%, 4%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(224, 71%, 4%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(215, 28%, 17%);
-  --input: hsl(215, 28%, 17%);
-  --primary: hsl(217, 91%, 60%);
-  --primary-foreground: hsl(222, 84%, 5%);
-  --secondary: hsl(142, 76%, 36%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(248, 95%, 70%);
-  --accent-foreground: hsl(222, 84%, 5%);
-  --destructive: hsl(0, 63%, 31%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(217, 91%, 60%);
+  --background: hsl(var(--deep-navy) / 0.95);
+  --foreground: hsl(var(--light-orange) / 0.9);
+  --muted: hsl(var(--deep-navy) / 0.8);
+  --muted-foreground: hsl(var(--mint) / 0.7);
+  --popover: hsl(var(--deep-navy));
+  --popover-foreground: hsl(var(--light-orange) / 0.9);
+  --card: hsl(var(--deep-navy) / 0.9);
+  --card-foreground: hsl(var(--light-orange) / 0.9);
+  --border: hsl(var(--sage-green) / 0.3);
+  --input: hsl(var(--sage-green) / 0.2);
+  --primary: hsl(var(--orange));
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(var(--sage-green));
+  --secondary-foreground: hsl(0 0% 100%);
+  --accent: hsl(var(--light-orange) / 0.8);
+  --accent-foreground: hsl(var(--deep-navy));
+  --destructive: hsl(0 63% 31%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --ring: hsl(var(--orange));
 }
 
 @layer base {
@@ -61,5 +75,52 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+
+  /* Mobile-first typography */
+  h1 { @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground; }
+  h2 { @apply text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground; }
+  h3 { @apply text-lg sm:text-xl lg:text-2xl font-medium text-foreground; }
+  h4 { @apply text-base sm:text-lg font-medium text-foreground; }
+  
+  /* Mobile-first spacing */
+  .section-padding { @apply px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12; }
+  .container-width { @apply max-w-7xl mx-auto; }
+  
+  /* Brand-specific components */
+  .brand-header { background: var(--header-bg); }
+  .brand-hero { background: var(--hero-bg); }
+  .brand-section { background: var(--section-bg); }
+  .brand-footer { background: var(--footer-bg); }
+  
+  /* Mobile-first buttons */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base;
+    @apply hover:bg-[hsl(var(--orange)/0.9)] transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    @apply w-full sm:w-auto;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base;
+    @apply hover:bg-[hsl(var(--sage-green)/0.9)] transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    @apply w-full sm:w-auto;
+  }
+  
+  /* Mobile navigation */
+  .mobile-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-[var(--header-bg)] border-t border-border;
+    @apply flex justify-around items-center py-2 px-4 sm:hidden z-50;
+  }
+  
+  .mobile-nav-item {
+    @apply flex flex-col items-center justify-center py-2 px-3 rounded-lg;
+    @apply text-xs text-[hsl(var(--light-orange)/0.7)] hover:text-[hsl(var(--light-orange))];
+    @apply hover:bg-[hsl(var(--deep-navy)/0.8)] transition-colors;
+  }
+  
+  .mobile-nav-item.active {
+    @apply text-[hsl(var(--light-orange))] bg-[hsl(var(--deep-navy)/0.8)];
   }
 }
