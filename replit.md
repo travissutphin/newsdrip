@@ -8,6 +8,17 @@ NewsletterPro is a full-stack newsletter management application built with React
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (July 24, 2025)
+
+✓ **Email Preference Management Workflow Completed**
+- Implemented complete token-based preference management system without requiring admin login
+- Added secure preference management page accessible via email links
+- Built comprehensive email templates (welcome, preferences updated, reminders)
+- Integrated automatic welcome emails with preference management links on subscription
+- Added secure unsubscribe functionality via email tokens
+- All backend routes and storage methods implemented and tested successfully
+- Frontend preferences page with full form validation and user-friendly interface
+
 ## System Architecture
 
 ### Frontend Architecture
