@@ -5,18 +5,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
+
 
 const newsletterSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subject: z.string().min(1, "Subject is required"),
   content: z.string().min(1, "Content is required"),
-  categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
+  categoryIds: z.array(z.number()).min(1, "Please select a category"),
 });
 
 type NewsletterFormData = z.infer<typeof newsletterSchema>;
@@ -40,7 +40,7 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
       title: newsletter?.title || "",
       subject: newsletter?.subject || "",
       content: newsletter?.content || "",
-      categoryIds: newsletter?.categories?.map((c: any) => c.id) || [],
+      categoryIds: newsletter?.categories?.length ? [newsletter.categories[0].id] : [],
     },
   });
 
@@ -77,17 +77,21 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
       onClose();
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      console.error("Newsletter save error:", error);
+      
+      // Check if it's an auth error
+      if (error instanceof Error && error.message.includes("401")) {
         toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
+          title: "Authentication Required",
+          description: "Please log in to continue.",
           variant: "destructive",
         });
         setTimeout(() => {
           window.location.href = "/api/login";
-        }, 500);
+        }, 1000);
         return;
       }
+      
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to save newsletter",
@@ -151,38 +155,33 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
           <FormField
             control={form.control}
             name="categoryIds"
-            render={() => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Categories</FormLabel>
-                <div className="flex flex-wrap gap-4">
-                  {(categories || []).map((category: any) => (
-                    <FormField
-                      key={category.id}
-                      control={form.control}
-                      name="categoryIds"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(category.id)}
-                              onCheckedChange={(checked) => {
-                                const current = field.value || [];
-                                if (checked) {
-                                  field.onChange([...current, category.id]);
-                                } else {
-                                  field.onChange(current.filter((id) => id !== category.id));
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm text-gray-700">
-                            {category.name}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                </div>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    value={field.value?.[0]?.toString() || ""}
+                    onValueChange={(value) => {
+                      field.onChange(value ? [parseInt(value)] : []);
+                    }}
+                    className="flex flex-wrap gap-4"
+                  >
+                    {(categories || []).map((category: any) => (
+                      <div key={category.id} className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value={category.id.toString()}
+                          id={`category-${category.id}`}
+                        />
+                        <FormLabel 
+                          htmlFor={`category-${category.id}`}
+                          className="text-sm text-gray-700 cursor-pointer"
+                        >
+                          {category.name}
+                        </FormLabel>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
