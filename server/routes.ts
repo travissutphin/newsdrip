@@ -132,13 +132,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             try {
               if (subscriber.contactMethod === 'email' && subscriber.email) {
-                await sendEmail({
+                const emailSent = await sendEmail({
                   to: subscriber.email,
                   subject: newsletter.subject || newsletter.title,
                   text: newsletter.content,
                   html: newsletter.htmlContent || `<p>${newsletter.content.replace(/\n/g, '<br>')}</p>`,
                 });
-                await storage.updateDeliveryStatus(delivery.id, 'sent');
+                
+                if (emailSent) {
+                  await storage.updateDeliveryStatus(delivery.id, 'sent');
+                } else {
+                  // Email service returned false (e.g., domain verification needed)
+                  await storage.updateDeliveryStatus(delivery.id, 'pending');
+                  console.log(`Email to ${subscriber.email} marked as pending due to Resend limitations`);
+                }
               } else if (subscriber.contactMethod === 'sms' && subscriber.phone) {
                 // SMS service not configured yet, mark as pending
                 await storage.updateDeliveryStatus(delivery.id, 'pending');

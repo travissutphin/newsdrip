@@ -29,11 +29,20 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       }),
     });
 
+    const responseData = await response.text();
+    
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Resend API error: ${response.statusText} - ${errorData}`);
+      // Check if it's a domain verification error
+      if (response.status === 403 && responseData.includes('verify a domain')) {
+        console.warn(`Resend domain verification required. Email to ${params.to} was not sent.`);
+        console.warn('To send emails to external recipients, verify a domain at resend.com/domains');
+        // Don't throw an error for domain verification issues in test mode
+        return false;
+      }
+      throw new Error(`Resend API error: ${response.statusText} - ${responseData}`);
     }
 
+    console.log(`Email sent successfully to ${params.to}:`, responseData);
     return true;
   } catch (error) {
     console.error('Email sending error:', error);
