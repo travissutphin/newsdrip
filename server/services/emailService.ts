@@ -1,4 +1,10 @@
 import { generateNewsletterHTML, generateNewsletterText } from '../templates/newsletterTemplate.js';
+import { 
+  generateWelcomeEmail, 
+  generatePreferencesUpdatedEmail,
+  type WelcomeEmailData,
+  type PreferencesUpdatedEmailData
+} from '../templates/preferencesEmailTemplate.js';
 
 interface EmailParams {
   to: string;
@@ -44,6 +50,28 @@ export async function sendNewsletterEmail(params: NewsletterEmailParams): Promis
     subject: params.subject,
     html: htmlContent,
     text: textContent
+  });
+}
+
+export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean> {
+  const emailContent = generateWelcomeEmail(data);
+  
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+    text: emailContent.text
+  });
+}
+
+export async function sendPreferencesUpdatedEmail(data: PreferencesUpdatedEmailData): Promise<boolean> {
+  const emailContent = generatePreferencesUpdatedEmail(data);
+  
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+    text: emailContent.text
   });
 }
 

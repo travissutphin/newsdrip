@@ -31,10 +31,13 @@ export interface IStorage {
   // Category operations
   getCategories(): Promise<Category[]>;
   getCategory(id: number): Promise<Category | undefined>;
+  getCategoriesByIds(ids: number[]): Promise<Category[]>;
   
   // Subscriber operations
   getSubscribers(): Promise<Subscriber[]>;
   getSubscriber(id: number): Promise<Subscriber | undefined>;
+  getSubscriberByPreferencesToken(token: string): Promise<Subscriber | undefined>;
+  getSubscriberByUnsubscribeToken(token: string): Promise<Subscriber | undefined>;
   createSubscriber(subscriber: InsertSubscriber): Promise<Subscriber>;
   updateSubscriber(id: number, subscriber: Partial<InsertSubscriber>): Promise<Subscriber>;
   deleteSubscriber(id: number): Promise<void>;
@@ -118,6 +121,11 @@ export class DatabaseStorage implements IStorage {
     return category;
   }
 
+  async getCategoriesByIds(ids: number[]): Promise<Category[]> {
+    if (ids.length === 0) return [];
+    return await db.select().from(categories).where(inArray(categories.id, ids));
+  }
+
   // Subscriber operations
   async getSubscribers(): Promise<Subscriber[]> {
     return await db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
@@ -128,14 +136,20 @@ export class DatabaseStorage implements IStorage {
     return subscriber;
   }
 
+  async getSubscriberByPreferencesToken(token: string): Promise<Subscriber | undefined> {
+    const [subscriber] = await db.select().from(subscribers).where(eq(subscribers.preferencesToken, token));
+    return subscriber;
+  }
+
+  async getSubscriberByUnsubscribeToken(token: string): Promise<Subscriber | undefined> {
+    const [subscriber] = await db.select().from(subscribers).where(eq(subscribers.unsubscribeToken, token));
+    return subscriber;
+  }
+
   async createSubscriber(subscriberData: InsertSubscriber): Promise<Subscriber> {
     const [subscriber] = await db
       .insert(subscribers)
-      .values({
-        ...subscriberData,
-        unsubscribeToken: nanoid(32),
-        preferencesToken: nanoid(32),
-      })
+      .values(subscriberData)
       .returning();
     return subscriber;
   }

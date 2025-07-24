@@ -3,9 +3,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertSubscriberSchema, insertNewsletterSchema } from "@shared/schema";
-import { sendEmail, sendNewsletterEmail } from "./services/emailService";
+import { sendEmail, sendNewsletterEmail, sendWelcomeEmail, sendPreferencesUpdatedEmail } from "./services/emailService";
 import { escapeHtml, getSafeErrorMessage } from "./utils/security";
 import { z } from "zod";
+import { nanoid } from "nanoid";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -32,13 +33,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { categoryIds, ...subscriberData } = subscriptionData;
 
-      // Create subscriber
-      const subscriber = await storage.createSubscriber(subscriberData);
+      // Create subscriber with tokens
+      const subscriberWithTokens = {
+        ...subscriberData,
+        unsubscribeToken: nanoid(32),
+        preferencesToken: nanoid(32),
+      };
+      
+      const subscriber = await storage.createSubscriber(subscriberWithTokens);
 
       // Set categories
       await storage.setSubscriberCategories(subscriber.id, categoryIds);
 
-      res.json({ message: "Successfully subscribed!", subscriber });
+      // Get categories for email
+      const categories = await storage.getCategoriesByIds(categoryIds);
+      
+      // Send welcome email with preference management links
+      try {
+        await sendWelcomeEmail({
+          email: subscriber.email || subscriber.phone || '',
+          preferencesUrl: `${req.protocol}://${req.get('host')}/preferences?token=${subscriber.preferencesToken}`,
+          unsubscribeUrl: `${req.protocol}://${req.get('host')}/api/unsubscribe/${subscriber.unsubscribeToken}`,
+          categories: categories.map(c => c.name),
+          frequency: subscriber.frequency,
+        });
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Continue anyway - subscription was successful
+      }
+
+      res.json({ message: "Successfully subscribed! Check your email for preference management options.", subscriber });
     } catch (error) {
       console.error("Subscription error:", error);
       res.status(400).json({ 
@@ -55,6 +79,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching categories:", error);
       res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Public preference management routes
+  app.get('/api/preferences/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      const subscriber = await storage.getSubscriberByPreferencesToken(token);
+      if (!subscriber) {
+        return res.status(404).json({ message: "Invalid or expired preferences link" });
+      }
+
+      // Get subscriber's categories
+      const categories = await storage.getSubscriberCategories(subscriber.id);
+      
+      res.json({
+        ...subscriber,
+        categories: categories,
+      });
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  app.put('/api/preferences/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      const updateSchema = z.object({
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        contactMethod: z.enum(["email", "sms"]),
+        frequency: z.enum(["daily", "weekly", "monthly"]),
+        categoryIds: z.array(z.number()).min(1),
+        isActive: z.boolean(),
+      }).refine((data) => {
+        if (data.contactMethod === "email" && !data.email) {
+          return false;
+        }
+        if (data.contactMethod === "sms" && !data.phone) {
+          return false;
+        }
+        return true;
+      });
+
+      const updateData = updateSchema.parse(req.body);
+      
+      const subscriber = await storage.getSubscriberByPreferencesToken(token);
+      if (!subscriber) {
+        return res.status(404).json({ message: "Invalid or expired preferences link" });
+      }
+
+      // Update subscriber
+      const updatedSubscriber = await storage.updateSubscriber(subscriber.id, updateData);
+      
+      // Update categories
+      await storage.setSubscriberCategories(subscriber.id, updateData.categoryIds);
+      
+      // Get updated categories for email
+      const categories = await storage.getCategoriesByIds(updateData.categoryIds);
+      
+      // Send confirmation email
+      if (updateData.isActive && updateData.email) {
+        try {
+          await sendPreferencesUpdatedEmail({
+            email: updateData.email,
+            preferencesUrl: `${req.protocol}://${req.get('host')}/preferences?token=${subscriber.preferencesToken}`,
+            unsubscribeUrl: `${req.protocol}://${req.get('host')}/api/unsubscribe/${subscriber.unsubscribeToken}`,
+            categories: categories.map(c => c.name),
+            frequency: updateData.frequency,
+            contactMethod: updateData.contactMethod,
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+        }
+      }
+
+      res.json({ 
+        message: "Preferences updated successfully!", 
+        subscriber: updatedSubscriber 
+      });
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      res.status(400).json({ 
+        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
+      });
+    }
+  });
+
+  app.post('/api/unsubscribe/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      const subscriber = await storage.getSubscriberByUnsubscribeToken(token);
+      if (!subscriber) {
+        return res.status(404).json({ message: "Invalid or expired unsubscribe link" });
+      }
+
+      // Deactivate subscriber
+      await storage.updateSubscriber(subscriber.id, { isActive: false });
+
+      res.json({ message: "Successfully unsubscribed from all newsletters" });
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+      res.status(500).json({ message: "Failed to unsubscribe" });
     }
   });
 
