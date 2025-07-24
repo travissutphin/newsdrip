@@ -1,8 +1,50 @@
+import { generateNewsletterHTML, generateNewsletterText } from '../templates/newsletterTemplate.js';
+
 interface EmailParams {
   to: string;
   subject: string;
   text?: string;
   html?: string;
+}
+
+interface NewsletterEmailParams {
+  to: string;
+  subject: string;
+  title: string;
+  content: string;
+  categories: string[];
+  unsubscribeToken: string;
+  preferencesToken: string;
+}
+
+export async function sendNewsletterEmail(params: NewsletterEmailParams): Promise<boolean> {
+  const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+    ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+    : 'http://localhost:5000';
+    
+  const unsubscribeUrl = `${baseUrl}/api/unsubscribe?token=${params.unsubscribeToken}`;
+  const preferencesUrl = `${baseUrl}/api/preferences?token=${params.preferencesToken}`;
+
+  const templateData = {
+    title: params.title,
+    content: params.content,
+    subscriberEmail: params.to,
+    unsubscribeUrl,
+    preferencesUrl,
+    categories: params.categories,
+    companyName: "NewsletterPro",
+    companyAddress: "Built with ❤️ on Replit"
+  };
+
+  const htmlContent = generateNewsletterHTML(templateData);
+  const textContent = generateNewsletterText(templateData);
+
+  return sendEmail({
+    to: params.to,
+    subject: params.subject,
+    html: htmlContent,
+    text: textContent
+  });
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
