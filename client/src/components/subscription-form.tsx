@@ -38,8 +38,9 @@ export default function SubscriptionForm() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { toast } = useToast();
 
-  const { data: categories } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["/api/categories"],
+    retry: 1,
   });
 
   const form = useForm<SubscriptionFormData>({
@@ -189,7 +190,7 @@ export default function SubscriptionForm() {
                   Choose your interests
                 </FormLabel>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  {(categories || []).map((category: any) => (
+                  {categories.map((category: any) => (
                     <FormField
                       key={category.id}
                       control={form.control}

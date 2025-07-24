@@ -11,9 +11,11 @@ type View = "subscription" | "dashboard" | "newsletters" | "subscribers" | "anal
 export default function Home() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
 
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading, error: dashboardError } = useQuery({
     queryKey: ["/api/admin/dashboard"],
     enabled: currentView === "dashboard",
+    retry: 1,
+    retryDelay: 1000,
   });
 
   const renderView = () => {

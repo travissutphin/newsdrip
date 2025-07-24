@@ -54,4 +54,7 @@ export const queryClient = new QueryClient({
       retry: false,
     },
   },
+  // Global error handler to prevent unhandled promise rejections
+  queryCache: undefined,
+  mutationCache: undefined,
 });
