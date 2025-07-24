@@ -10,8 +10,8 @@ import { useState } from "react";
 
 export default function SubscribersView() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [methodFilter, setMethodFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [methodFilter, setMethodFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const { toast } = useToast();
 
   const { data: subscribers, isLoading } = useQuery({
@@ -56,8 +56,8 @@ export default function SubscribersView() {
     const matchesSearch = 
       subscriber.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subscriber.phone?.includes(searchTerm);
-    const matchesMethod = !methodFilter || subscriber.contactMethod === methodFilter;
-    const matchesStatus = !statusFilter || (statusFilter === "active" ? subscriber.isActive : !subscriber.isActive);
+    const matchesMethod = !methodFilter || methodFilter === "all" || subscriber.contactMethod === methodFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || (statusFilter === "active" ? subscriber.isActive : !subscriber.isActive);
     
     return matchesSearch && matchesMethod && matchesStatus;
   });
@@ -102,7 +102,7 @@ export default function SubscribersView() {
                 <SelectValue placeholder="All Methods" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Methods</SelectItem>
+                <SelectItem value="all">All Methods</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
                 <SelectItem value="sms">SMS</SelectItem>
               </SelectContent>
@@ -115,7 +115,7 @@ export default function SubscribersView() {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>

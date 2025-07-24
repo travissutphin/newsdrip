@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
@@ -27,6 +28,7 @@ interface NewsletterFormProps {
 
 export default function NewsletterForm({ newsletter, onClose }: NewsletterFormProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
@@ -84,7 +86,13 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
   });
 
   const onSubmit = (data: NewsletterFormData, action: "draft" | "send") => {
-    saveMutation.mutate({ ...data, action });
+    // Add authorId from the current user
+    const payload = {
+      ...data,
+      authorId: user?.id || "admin", // Use user ID from auth or fallback
+      action
+    };
+    saveMutation.mutate(payload);
   };
 
   return (
