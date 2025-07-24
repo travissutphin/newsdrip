@@ -80,18 +80,17 @@ export default function SubscriptionForm() {
 
   if (isSubscribed) {
     return (
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6 sm:p-8 text-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
         <div className="mb-4">
-          <i className="fas fa-check-circle text-3xl sm:text-4xl text-secondary"></i>
+          <i className="fas fa-check-circle text-4xl text-secondary"></i>
         </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">You're all set!</h3>
-        <p className="text-muted-foreground text-sm sm:text-base mb-6">
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set!</h3>
+        <p className="text-gray-600 mb-6">
           Thank you for subscribing. You'll receive updates based on your selected preferences.
         </p>
         <Button
           variant="outline"
           onClick={() => setIsSubscribed(false)}
-          className="btn-secondary"
         >
           Subscribe Another Contact
         </Button>
@@ -100,7 +99,7 @@ export default function SubscriptionForm() {
   }
 
   return (
-    <div className="bg-card rounded-xl shadow-sm border border-border p-6 sm:p-8">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Contact Method Selection */}
@@ -250,7 +249,7 @@ export default function SubscriptionForm() {
           {/* Submit Button */}
           <Button
             type="submit"
-            className="btn-primary"
+            className="w-full"
             disabled={subscribeMutation.isPending}
           >
             {subscribeMutation.isPending ? (
@@ -266,7 +265,7 @@ export default function SubscriptionForm() {
             )}
           </Button>
 
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-gray-500 text-center">
             By subscribing, you agree to receive updates. You can unsubscribe at any time.
           </p>
         </form>

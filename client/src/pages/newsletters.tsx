@@ -86,11 +86,12 @@ export default function NewslettersView() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Section */}
-      <div className="brand-hero rounded-lg p-6 sm:p-8 text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[hsl(var(--deep-navy))] mb-2">Newsletter Management</h2>
-        <p className="text-[hsl(var(--deep-navy)/0.8)] text-sm sm:text-base mb-4">Create, edit, and send newsletters to your subscribers</p>
-        <Button onClick={() => setShowForm(true)} className="btn-primary">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Newsletter Management</h2>
+          <p className="text-gray-600">Create, edit, and send newsletters to your subscribers</p>
+        </div>
+        <Button onClick={() => setShowForm(true)}>
           <i className="fas fa-plus mr-2"></i>Create Newsletter
         </Button>
       </div>
@@ -103,14 +104,14 @@ export default function NewslettersView() {
       )}
 
       {/* Email Delivery Info Panel */}
-      <div className="bg-[hsl(var(--mint)/0.3)] border border-[hsl(var(--mint))] rounded-lg p-4 sm:p-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex">
           <div className="flex-shrink-0">
-            <i className="fas fa-info-circle text-[hsl(var(--sage-green))]"></i>
+            <i className="fas fa-info-circle text-blue-400"></i>
           </div>
           <div className="ml-3">
-            <h4 className="text-sm sm:text-base font-medium text-[hsl(var(--deep-navy))]">Email Delivery Information</h4>
-            <div className="mt-2 text-xs sm:text-sm text-[hsl(var(--deep-navy)/0.8)]">
+            <h4 className="text-sm font-medium text-blue-800">Email Delivery Information</h4>
+            <div className="mt-2 text-sm text-blue-700">
               <p>Your newsletters are being sent to all subscribers with matching categories. However, email delivery depends on several factors:</p>
               <ul className="mt-2 list-disc list-inside space-y-1">
                 <li><strong>✓ Delivered:</strong> Email successfully sent and accepted</li>
@@ -129,26 +130,26 @@ export default function NewslettersView() {
       </div>
 
       {/* Newsletter List */}
-      <div className="bg-card rounded-lg shadow-sm border border-border">
-        <div className="px-4 sm:px-6 py-4 border-b border-border">
-          <h3 className="text-lg font-medium text-foreground">Recent Newsletters</h3>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900">Recent Newsletters</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border">
-            <thead className="brand-section">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Title</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Status</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Categories</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Delivery</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">Sent Date</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sent Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-card divide-y divide-border">
+            <tbody className="bg-white divide-y divide-gray-200">
               {!newsletters || newsletters.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 sm:px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                     No newsletters found. Create your first newsletter to get started.
                   </td>
                 </tr>

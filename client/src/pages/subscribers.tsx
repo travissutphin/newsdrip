@@ -65,13 +65,14 @@ export default function SubscribersView() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {/* Hero Section */}
-        <div className="brand-hero rounded-lg p-6 sm:p-8 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[hsl(var(--deep-navy))] mb-2">Subscriber Management</h2>
-          <p className="text-[hsl(var(--deep-navy)/0.8)] text-sm sm:text-base">View and manage your newsletter subscribers</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Subscriber Management</h2>
+            <p className="text-gray-600">View and manage your newsletter subscribers</p>
+          </div>
         </div>
-        <div className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
-          <div className="h-4 bg-muted rounded mb-4"></div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
+          <div className="h-4 bg-gray-200 rounded mb-4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 bg-gray-200 rounded"></div>
@@ -84,17 +85,18 @@ export default function SubscribersView() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Section */}
-      <div className="brand-hero rounded-lg p-6 sm:p-8 text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[hsl(var(--deep-navy))] mb-2">Subscriber Management</h2>
-        <p className="text-[hsl(var(--deep-navy)/0.8)] text-sm sm:text-base">View and manage your newsletter subscribers</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Subscriber Management</h2>
+          <p className="text-gray-600">View and manage your newsletter subscribers</p>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-card rounded-lg shadow-sm border border-border p-4 sm:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label htmlFor="filter-method" className="block text-sm font-medium text-foreground mb-2">Contact Method</label>
+            <label htmlFor="filter-method" className="block text-sm font-medium text-gray-700 mb-2">Contact Method</label>
             <Select value={methodFilter} onValueChange={setMethodFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="All Methods" />
@@ -107,7 +109,7 @@ export default function SubscribersView() {
             </Select>
           </div>
           <div>
-            <label htmlFor="filter-status" className="block text-sm font-medium text-foreground mb-2">Status</label>
+            <label htmlFor="filter-status" className="block text-sm font-medium text-gray-700 mb-2">Status</label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="All Statuses" />
@@ -119,8 +121,8 @@ export default function SubscribersView() {
               </SelectContent>
             </Select>
           </div>
-          <div className="sm:col-span-2">
-            <label htmlFor="search-subscribers" className="block text-sm font-medium text-foreground mb-2">Search</label>
+          <div className="md:col-span-2">
+            <label htmlFor="search-subscribers" className="block text-sm font-medium text-gray-700 mb-2">Search</label>
             <Input
               id="search-subscribers"
               placeholder="Search subscribers..."
