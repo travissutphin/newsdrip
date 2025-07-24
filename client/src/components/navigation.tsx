@@ -77,26 +77,16 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
           {/* User Profile */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
-              {user && 'profileImageUrl' in user && user.profileImageUrl && (
-                <img 
-                  className="h-8 w-8 rounded-full object-cover mr-2" 
-                  src={user.profileImageUrl} 
-                  alt="Profile" 
-                />
-              )}
               <span className="text-sm font-medium text-gray-700">
-                {(user && 'firstName' in user && user.firstName) || 
-                 (user && 'email' in user && user.email) || 
-                 "Admin"}
+                {user && typeof user === 'object' && 'email' in user ? String(user.email) : "Admin"}
               </span>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded text-sm"
               onClick={() => window.location.href = "/api/logout"}
             >
               Logout
-            </Button>
+            </button>
           </div>
         </div>
       </div>
