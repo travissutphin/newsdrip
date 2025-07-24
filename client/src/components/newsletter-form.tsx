@@ -30,7 +30,7 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const { data: categories } = useQuery({
+  const { data: categories } = useQuery<any[]>({
     queryKey: ["/api/categories"],
   });
 
@@ -89,7 +89,7 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
     // Add authorId from the current user
     const payload = {
       ...data,
-      authorId: user?.id || "admin", // Use user ID from auth or fallback
+      authorId: (user as any)?.id || "admin", // Use user ID from auth or fallback
       action
     };
     saveMutation.mutate(payload);

@@ -14,7 +14,7 @@ export default function SubscribersView() {
   const [statusFilter, setStatusFilter] = useState("all");
   const { toast } = useToast();
 
-  const { data: subscribers, isLoading } = useQuery({
+  const { data: subscribers, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/subscribers"],
   });
 
@@ -152,7 +152,7 @@ export default function SubscribersView() {
               {filteredSubscribers?.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
-                    {!subscribers || subscribers.length === 0 
+                    {!subscribers || (subscribers as any[]).length === 0 
                       ? "No subscribers found. Subscribers will appear here when they sign up."
                       : "No subscribers match your filters."}
                   </td>
