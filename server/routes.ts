@@ -82,15 +82,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const newsletters = await storage.getNewsletters();
       
-      // Get categories for each newsletter
-      const newslettersWithCategories = await Promise.all(
+      // Get categories and delivery stats for each newsletter
+      const newslettersWithDetails = await Promise.all(
         newsletters.map(async (newsletter) => {
           const categories = await storage.getNewsletterCategories(newsletter.id);
-          return { ...newsletter, categories };
+          
+          // Get delivery stats if newsletter was sent
+          let deliveryStats = null;
+          if (newsletter.status === 'sent') {
+            const deliveries = await storage.getDeliveries();
+            const newsletterDeliveries = deliveries.filter(d => d.newsletterId === newsletter.id);
+            
+            deliveryStats = {
+              total: newsletterDeliveries.length,
+              sent: newsletterDeliveries.filter(d => d.status === 'sent').length,
+              failed: newsletterDeliveries.filter(d => d.status === 'failed').length,
+              pending: newsletterDeliveries.filter(d => d.status === 'pending').length,
+            };
+          }
+          
+          return { ...newsletter, categories, deliveryStats };
         })
       );
 
-      res.json(newslettersWithCategories);
+      res.json(newslettersWithDetails);
     } catch (error) {
       console.error("Error fetching newsletters:", error);
       res.status(500).json({ message: "Failed to fetch newsletters" });
@@ -157,12 +172,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
 
           await Promise.all(deliveryPromises);
+          
+          // Get final delivery stats for response
+          const deliveries = await storage.getDeliveries();
+          const newsletterDeliveries = deliveries.filter(d => d.newsletterId === newsletter.id);
+          const deliveryStats = {
+            total: newsletterDeliveries.length,
+            sent: newsletterDeliveries.filter(d => d.status === 'sent').length,
+            failed: newsletterDeliveries.filter(d => d.status === 'failed').length,
+            pending: newsletterDeliveries.filter(d => d.status === 'pending').length,
+          };
+          
+          res.json({ 
+            message: `Newsletter sent to ${deliveryStats.total} subscribers! (${deliveryStats.sent} delivered, ${deliveryStats.pending} pending, ${deliveryStats.failed} failed)`,
+            newsletter,
+            deliveryStats
+          });
         } catch (deliveryError) {
           console.error('Mass delivery error:', deliveryError);
+          res.status(500).json({ message: "Failed to deliver newsletter" });
         }
+      } else {
+        res.json({ message: 'Newsletter saved as draft!', newsletter });
       }
-
-      res.json({ message: action === 'send' ? 'Newsletter sent!' : 'Newsletter saved!', newsletter });
     } catch (error) {
       console.error("Newsletter creation error:", error);
       res.status(400).json({ 

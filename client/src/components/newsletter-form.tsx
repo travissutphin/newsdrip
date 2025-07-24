@@ -59,10 +59,21 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       
       const action = variables.action;
-      toast({
-        title: "Success",
-        description: action === "send" ? "Newsletter sent successfully!" : "Newsletter saved as draft",
-      });
+      const response = data as any;
+      
+      // Show detailed delivery info for sent newsletters
+      if (action === "send" && response.deliveryStats) {
+        const stats = response.deliveryStats;
+        toast({
+          title: "Newsletter Sent!",
+          description: `Sent to ${stats.total} subscribers (${stats.sent} delivered, ${stats.pending} pending, ${stats.failed} failed)`,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: response.message || (action === "send" ? "Newsletter sent successfully!" : "Newsletter saved as draft"),
+        });
+      }
       onClose();
     },
     onError: (error) => {

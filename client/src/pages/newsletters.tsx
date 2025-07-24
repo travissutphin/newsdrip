@@ -12,7 +12,7 @@ export default function NewslettersView() {
   const [editingNewsletter, setEditingNewsletter] = useState<any>(null);
   const { toast } = useToast();
 
-  const { data: newsletters, isLoading } = useQuery({
+  const { data: newsletters, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/newsletters"],
   });
 
@@ -103,6 +103,32 @@ export default function NewslettersView() {
         />
       )}
 
+      {/* Email Delivery Info Panel */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <i className="fas fa-info-circle text-blue-400"></i>
+          </div>
+          <div className="ml-3">
+            <h4 className="text-sm font-medium text-blue-800">Email Delivery Information</h4>
+            <div className="mt-2 text-sm text-blue-700">
+              <p>Your newsletters are being sent to all subscribers with matching categories. However, email delivery depends on several factors:</p>
+              <ul className="mt-2 list-disc list-inside space-y-1">
+                <li><strong>✓ Delivered:</strong> Email successfully sent and accepted</li>
+                <li><strong>⏳ Pending:</strong> Waiting for domain verification or rate limiting</li>
+                <li><strong>✗ Failed:</strong> Delivery failed due to invalid email or service issues</li>
+              </ul>
+              <p className="mt-2">
+                To improve delivery rates, consider verifying your sending domain with Resend at{" "}
+                <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="underline">
+                  resend.com/domains
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Newsletter List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -115,6 +141,7 @@ export default function NewslettersView() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sent Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -122,7 +149,7 @@ export default function NewslettersView() {
             <tbody className="bg-white divide-y divide-gray-200">
               {!newsletters || newsletters.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                     No newsletters found. Create your first newsletter to get started.
                   </td>
                 </tr>
@@ -153,6 +180,34 @@ export default function NewslettersView() {
                           </Badge>
                         ))}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {newsletter.deliveryStats ? (
+                        <div className="space-y-1">
+                          <div className="text-xs text-gray-600">
+                            {newsletter.deliveryStats.total} recipients
+                          </div>
+                          <div className="flex gap-2">
+                            {newsletter.deliveryStats.sent > 0 && (
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                ✓ {newsletter.deliveryStats.sent}
+                              </Badge>
+                            )}
+                            {newsletter.deliveryStats.pending > 0 && (
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                                ⏳ {newsletter.deliveryStats.pending}
+                              </Badge>
+                            )}
+                            {newsletter.deliveryStats.failed > 0 && (
+                              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                                ✗ {newsletter.deliveryStats.failed}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {newsletter.sentAt
