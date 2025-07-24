@@ -24,12 +24,10 @@ interface NewsletterEmailParams {
 }
 
 export async function sendNewsletterEmail(params: NewsletterEmailParams): Promise<boolean> {
-  const baseUrl = process.env.REPLIT_DEV_DOMAIN 
-    ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
-    : 'http://localhost:5000';
+  const baseUrl = getBaseUrl();
     
-  const unsubscribeUrl = `${baseUrl}/api/unsubscribe?token=${params.unsubscribeToken}`;
-  const preferencesUrl = `${baseUrl}/api/preferences?token=${params.preferencesToken}`;
+  const unsubscribeUrl = `${baseUrl}/api/unsubscribe/${params.unsubscribeToken}`;
+  const preferencesUrl = `${baseUrl}/preferences?token=${params.preferencesToken}`;
 
   const templateData = {
     title: params.title,
@@ -51,6 +49,20 @@ export async function sendNewsletterEmail(params: NewsletterEmailParams): Promis
     html: htmlContent,
     text: textContent
   });
+}
+
+function getBaseUrl(): string {
+  // Check for Replit deployment domains
+  if (process.env.REPLIT_DOMAINS) {
+    const domains = process.env.REPLIT_DOMAINS.split(',');
+    const primaryDomain = domains[0];
+    return `https://${primaryDomain}`;
+  }
+  
+  // Fallback for development
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://your-app.replit.app' 
+    : 'http://localhost:5000';
 }
 
 export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean> {

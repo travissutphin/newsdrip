@@ -7,6 +7,27 @@ import { sendEmail, sendNewsletterEmail, sendWelcomeEmail, sendPreferencesUpdate
 import { escapeHtml, getSafeErrorMessage } from "./utils/security";
 import { z } from "zod";
 import { nanoid } from "nanoid";
+import type { Request } from "express";
+
+function getBaseUrl(req: Request): string {
+  // Check for Replit deployment domains
+  if (process.env.REPLIT_DOMAINS) {
+    const domains = process.env.REPLIT_DOMAINS.split(',');
+    const primaryDomain = domains[0];
+    return `https://${primaryDomain}`;
+  }
+  
+  // Use request context if available
+  if (req.get('host')) {
+    const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+    return `${protocol}://${req.get('host')}`;
+  }
+  
+  // Fallback for development
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://your-app.replit.app' 
+    : 'http://localhost:5000';
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -50,10 +71,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Send welcome email with preference management links
       try {
+        const baseUrl = getBaseUrl(req);
         await sendWelcomeEmail({
           email: subscriber.email || subscriber.phone || '',
-          preferencesUrl: `${req.protocol}://${req.get('host')}/preferences?token=${subscriber.preferencesToken}`,
-          unsubscribeUrl: `${req.protocol}://${req.get('host')}/api/unsubscribe/${subscriber.unsubscribeToken}`,
+          preferencesUrl: `${baseUrl}/preferences?token=${subscriber.preferencesToken}`,
+          unsubscribeUrl: `${baseUrl}/api/unsubscribe/${subscriber.unsubscribeToken}`,
           categories: categories.map(c => c.name),
           frequency: subscriber.frequency,
         });
@@ -145,10 +167,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send confirmation email
       if (updateData.isActive && updateData.email) {
         try {
+          const baseUrl = getBaseUrl(req);
           await sendPreferencesUpdatedEmail({
             email: updateData.email,
-            preferencesUrl: `${req.protocol}://${req.get('host')}/preferences?token=${subscriber.preferencesToken}`,
-            unsubscribeUrl: `${req.protocol}://${req.get('host')}/api/unsubscribe/${subscriber.unsubscribeToken}`,
+            preferencesUrl: `${baseUrl}/preferences?token=${subscriber.preferencesToken}`,
+            unsubscribeUrl: `${baseUrl}/api/unsubscribe/${subscriber.unsubscribeToken}`,
             categories: categories.map(c => c.name),
             frequency: updateData.frequency,
             contactMethod: updateData.contactMethod,

@@ -18,6 +18,7 @@ Preferred communication style: Simple, everyday language.
 - Added secure unsubscribe functionality via email tokens
 - All backend routes and storage methods implemented and tested successfully
 - Frontend preferences page with full form validation and user-friendly interface
+- **Updated**: Dynamic URL generation for deployed domains using REPLIT_DOMAINS environment variable
 
 ## System Architecture
 
