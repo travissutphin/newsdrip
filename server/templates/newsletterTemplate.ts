@@ -1,3 +1,5 @@
+import { escapeHtml, safeFormatContent, sanitizeEmail, sanitizeCategories } from '../utils/security';
+
 interface NewsletterTemplateData {
   title: string;
   content: string;
@@ -21,12 +23,20 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
     categories
   } = data;
 
+  // Sanitize all input data to prevent XSS
+  const safeTitle = escapeHtml(title);
+  const safeContent = safeFormatContent(content);
+  const safeEmail = sanitizeEmail(subscriberEmail);
+  const safeCompanyName = escapeHtml(companyName);
+  const safeCompanyAddress = escapeHtml(companyAddress);
+  const safeCategories = sanitizeCategories(categories);
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
+    <title>${safeTitle}</title>
     <style>
         /* Email-safe CSS */
         body {
@@ -229,25 +239,25 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
     <div class="email-container">
         <!-- Header -->
         <div class="header">
-            <h1>${companyName}</h1>
+            <h1>${safeCompanyName}</h1>
             <p class="tagline">Your trusted newsletter source</p>
         </div>
         
         <!-- Content -->
         <div class="content">
-            <h2>${title}</h2>
+            <h2>${safeTitle}</h2>
             
             <!-- Categories -->
             <div class="categories">
                 <h3>Newsletter Categories</h3>
                 <div class="category-tags">
-                    ${categories.map(category => `<span class="category-tag">${category}</span>`).join('')}
+                    ${safeCategories.map(category => `<span class="category-tag">${category}</span>`).join('')}
                 </div>
             </div>
             
             <!-- Newsletter Content -->
             <div class="newsletter-content">
-                ${formatContent(content)}
+                ${safeContent}
             </div>
             
             <div class="divider"></div>
@@ -261,8 +271,8 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>${companyName}</strong></p>
-            <p>${companyAddress}</p>
+            <p><strong>${safeCompanyName}</strong></p>
+            <p>${safeCompanyAddress}</p>
             
             <div class="footer-links">
                 <a href="${preferencesUrl}">Update Preferences</a>
@@ -280,7 +290,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             <div class="unsubscribe">
                 <p>
                     You're receiving this email because you subscribed to our newsletter.<br>
-                    This email was sent to: ${subscriberEmail}<br><br>
+                    This email was sent to: ${safeEmail}<br><br>
                     <a href="${unsubscribeUrl}">Unsubscribe</a> | 
                     <a href="${preferencesUrl}">Update Preferences</a>
                 </p>
@@ -291,38 +301,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
 </html>`;
 }
 
-function formatContent(content: string): string {
-  // Convert plain text to HTML with proper formatting
-  return content
-    // Convert line breaks to paragraphs
-    .split('\n\n')
-    .map(paragraph => {
-      if (paragraph.trim() === '') return '';
-      
-      // Handle lists
-      if (paragraph.includes('\n- ') || paragraph.includes('\n• ')) {
-        const items = paragraph.split('\n').filter(line => line.trim().startsWith('- ') || line.trim().startsWith('• '));
-        const listItems = items.map(item => `<li>${item.replace(/^[•-]\s*/, '').trim()}</li>`).join('');
-        return `<ul>${listItems}</ul>`;
-      }
-      
-      // Handle numbered lists
-      if (/^\d+\.\s/.test(paragraph.trim())) {
-        const items = paragraph.split('\n').filter(line => /^\d+\.\s/.test(line.trim()));
-        const listItems = items.map(item => `<li>${item.replace(/^\d+\.\s*/, '').trim()}</li>`).join('');
-        return `<ol>${listItems}</ol>`;
-      }
-      
-      // Handle headers (lines that are all caps or start with #)
-      if (paragraph.trim().toUpperCase() === paragraph.trim() && paragraph.length < 60) {
-        return `<h3 style="color: #2d3748; font-size: 18px; font-weight: 600; margin: 24px 0 16px 0;">${paragraph.trim()}</h3>`;
-      }
-      
-      // Regular paragraphs
-      return `<p>${paragraph.trim().replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('');
-}
+
 
 export function generateNewsletterText(data: NewsletterTemplateData): string {
   const {
@@ -335,12 +314,19 @@ export function generateNewsletterText(data: NewsletterTemplateData): string {
     categories
   } = data;
 
-  return `${companyName.toUpperCase()}
-${title}
+  // For text emails, we don't need HTML escaping, just safe text content
+  const safeTitle = title.replace(/[<>]/g, '');
+  const safeContent = content.replace(/[<>]/g, '');
+  const safeEmail = subscriberEmail.replace(/[<>]/g, '');
+  const safeCompanyName = companyName.replace(/[<>]/g, '');
+  const safeCategories = categories.map(cat => cat.replace(/[<>]/g, ''));
 
-Categories: ${categories.join(', ')}
+  return `${safeCompanyName.toUpperCase()}
+${safeTitle}
 
-${content}
+Categories: ${safeCategories.join(', ')}
+
+${safeContent}
 
 ---
 
@@ -348,9 +334,9 @@ Thank you for reading!
 
 Manage your preferences: ${preferencesUrl}
 
-This email was sent to: ${subscriberEmail}
+This email was sent to: ${safeEmail}
 Unsubscribe: ${unsubscribeUrl}
 Update Preferences: ${preferencesUrl}
 
-© ${new Date().getFullYear()} ${companyName}`;
+© ${new Date().getFullYear()} ${safeCompanyName}`;
 }

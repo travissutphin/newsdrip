@@ -93,6 +93,31 @@ Preferred communication style: Simple, everyday language.
 - **Linting**: TypeScript compiler for type checking
 - **Development**: Hot module replacement and error overlay
 
+## Security Architecture
+
+### Security Measures Implemented
+- **XSS Prevention**: HTML escaping for all user-controlled data in email templates and web pages
+- **SQL Injection Protection**: Drizzle ORM with parameterized queries
+- **CSRF Protection**: Rate limiting and security headers implemented
+- **Rate Limiting**: API endpoint protection with tiered rate limits (100/15min general, 10/15min sensitive)
+- **Security Headers**: Helmet.js with Content Security Policy
+- **Input Validation**: Comprehensive Zod schema validation for all inputs
+- **Error Handling**: Generic error messages in production, detailed only in development
+- **Session Security**: Secure HTTP-only cookies with PostgreSQL storage
+
+### Security Headers Applied
+- **CSP**: Content Security Policy preventing XSS and code injection
+- **HSTS**: HTTP Strict Transport Security for HTTPS enforcement  
+- **X-Frame-Options**: Clickjacking protection
+- **X-Content-Type-Options**: MIME sniffing protection
+- **Rate Limiting**: Request throttling for abuse prevention
+
+### Input Sanitization
+- **Email Templates**: All dynamic content HTML-escaped to prevent stored XSS
+- **User Data**: Subscriber emails, names, and categories sanitized before display
+- **Newsletter Content**: Safe formatting with HTML escaping for user content
+- **URL Parameters**: Token validation and sanitization for unsubscribe/preferences
+
 ## Deployment Strategy
 
 ### Build Process
@@ -102,7 +127,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Environment Configuration
 - **Development**: Local development with Vite dev server
-- **Production**: Node.js server serving built assets
+- **Production**: Node.js server serving built assets with security headers
 - **Database**: Environment-based connection string configuration
 - **Secrets**: Environment variables for API keys and session secrets
 
@@ -111,3 +136,4 @@ Preferred communication style: Simple, everyday language.
 - **Application**: Stateless design allows horizontal scaling
 - **Sessions**: Database-backed sessions support multiple instances
 - **Assets**: Static files can be served via CDN if needed
+- **Security**: Rate limiting and security headers scale with load balancer configuration

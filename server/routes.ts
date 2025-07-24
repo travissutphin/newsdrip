@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertSubscriberSchema, insertNewsletterSchema } from "@shared/schema";
 import { sendEmail, sendNewsletterEmail } from "./services/emailService";
+import { escapeHtml, getSafeErrorMessage } from "./utils/security";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -41,7 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Subscription error:", error);
       res.status(400).json({ 
-        message: error instanceof Error ? error.message : "Subscription failed" 
+        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
       });
     }
   });
@@ -205,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Newsletter creation error:", error);
       res.status(400).json({ 
-        message: error instanceof Error ? error.message : "Failed to create newsletter" 
+        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
       });
     }
   });
@@ -371,7 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <body>
             <h2 class="success">✓ Successfully Unsubscribed</h2>
             <p>You have been unsubscribed from our newsletter.</p>
-            <p>Email: <strong>${subscriber.email || subscriber.phone}</strong></p>
+            <p>Email: <strong>${escapeHtml(subscriber.email || subscriber.phone || '')}</strong></p>
             <p>We're sorry to see you go! You will no longer receive newsletters from us.</p>
             <p>If this was a mistake, you can always subscribe again on our website.</p>
             <a href="/" class="button">Return to Website</a>
@@ -448,8 +449,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <body>
             <h2>📧 Newsletter Preferences</h2>
             <div class="info">
-              <strong>Subscriber:</strong> ${subscriber.email || subscriber.phone}<br>
-              <strong>Contact Method:</strong> ${subscriber.contactMethod}<br>
+              <strong>Subscriber:</strong> ${escapeHtml(subscriber.email || subscriber.phone || '')}<br>
+              <strong>Contact Method:</strong> ${escapeHtml(subscriber.contactMethod)}<br>
               <strong>Status:</strong> ${subscriber.isActive ? 'Active' : 'Inactive'}
             </div>
             
@@ -472,7 +473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     <input type="checkbox" name="categories" value="${category.id}" id="cat-${category.id}" 
                            ${subscriberCategories.some(sc => sc.id === category.id) ? 'checked' : ''}>
                     <label for="cat-${category.id}" style="display: inline; font-weight: normal;">
-                      ${category.name} ${category.description ? `- ${category.description}` : ''}
+                      ${escapeHtml(category.name)} ${category.description ? `- ${escapeHtml(category.description)}` : ''}
                     </label>
                   </div>
                 `).join('')}
