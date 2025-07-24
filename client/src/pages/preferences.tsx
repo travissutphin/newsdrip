@@ -40,8 +40,8 @@ export default function PreferencesPage() {
   const { toast } = useToast();
   const [isUpdated, setIsUpdated] = useState(false);
   
-  // Get token from URL params
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Get token from URL params using window.location.search
+  const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   
   if (!token) {
