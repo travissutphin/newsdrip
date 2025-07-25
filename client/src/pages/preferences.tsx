@@ -224,11 +224,15 @@ export default function PreferencesPage() {
           </div>
 
           {/* Success Message */}
-          {isUpdated && isActive && (
-            <div className="px-6 py-4 bg-green-50 border-b border-green-200">
+          {isUpdated && (
+            <div className="px-6 py-4 bg-green-50 border-b border-green-200" data-testid="success-message">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                <p className="text-sm text-green-700">Your preferences have been updated successfully!</p>
+                <p className="text-sm text-green-700">
+                  {isActive 
+                    ? "Your preferences have been updated successfully!" 
+                    : "Your subscription has been deactivated successfully!"}
+                </p>
               </div>
             </div>
           )}
@@ -247,6 +251,7 @@ export default function PreferencesPage() {
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          data-testid="checkbox-active-subscription"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -310,6 +315,7 @@ export default function PreferencesPage() {
                                 <Input
                                   type="email"
                                   placeholder="Enter your email address"
+                                  data-testid="input-email"
                                   {...field}
                                 />
                               </FormControl>
@@ -330,6 +336,7 @@ export default function PreferencesPage() {
                                 <Input
                                   type="tel"
                                   placeholder="Enter your phone number"
+                                  data-testid="input-phone"
                                   {...field}
                                 />
                               </FormControl>
@@ -426,6 +433,7 @@ export default function PreferencesPage() {
                     type="submit"
                     disabled={updateMutation.isPending}
                     className="flex-1"
+                    data-testid="button-update-preferences"
                   >
                     {updateMutation.isPending ? "Updating..." : "Update Preferences"}
                   </Button>
@@ -437,6 +445,7 @@ export default function PreferencesPage() {
                       onClick={handleUnsubscribe}
                       disabled={unsubscribeMutation.isPending}
                       className="flex-1"
+                      data-testid="button-unsubscribe"
                     >
                       {unsubscribeMutation.isPending ? "Unsubscribing..." : "Unsubscribe"}
                     </Button>
