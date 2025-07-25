@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CheckCircle, Mail, MessageSquare, Clock } from "lucide-react";
 
 const preferencesSchema = z.object({
@@ -106,8 +106,10 @@ export default function PreferencesPage() {
       const response = await apiRequest("PUT", `/api/preferences/${token}`, data);
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setIsUpdated(true);
+      // Invalidate and refetch the preferences query to show updated data
+      queryClient.invalidateQueries({ queryKey: ["/api/preferences", token] });
       toast({
         title: "Preferences Updated",
         description: "Your subscription preferences have been successfully updated.",
