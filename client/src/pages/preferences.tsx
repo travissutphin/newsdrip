@@ -209,17 +209,17 @@ export default function PreferencesPage() {
 
   if (isUpdated && !isActive) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-8">
             <div className="text-green-500 mb-4">
               <CheckCircle className="h-12 w-12 mx-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Unsubscribed</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Unsubscribed</h1>
+            <p className="text-muted-foreground">
               You have been successfully unsubscribed from all newsletters. We're sorry to see you go!
             </p>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-muted-foreground mt-4">
               You can resubscribe anytime by visiting our website.
             </p>
           </div>
@@ -229,26 +229,30 @@ export default function PreferencesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-card rounded-lg shadow-lg border border-border">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-6 border-b border-border">
             <div className="flex items-center">
-              <Mail className="h-6 w-6 text-blue-600 mr-3" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 2L3 14h6l-2 8 10-12h-6l2-8z" />
+                </svg>
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Manage Your Preferences</h1>
-                <p className="text-sm text-gray-600">Update your newsletter subscription settings</p>
+                <h1 className="text-2xl font-bold text-foreground">Manage Your Preferences</h1>
+                <p className="text-sm text-muted-foreground">Update your NewsDrip subscription settings</p>
               </div>
             </div>
           </div>
 
           {/* Success Message */}
           {isUpdated && (
-            <div className="px-6 py-4 bg-green-50 border-b border-green-200" data-testid="success-message">
+            <div className="px-6 py-4 bg-green-500/10 border-b border-green-500/20" data-testid="success-message">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-green-600 dark:text-green-400">
                   {isActive 
                     ? "Your preferences have been updated successfully!" 
                     : "Your subscription has been deactivated successfully!"}
@@ -266,20 +270,21 @@ export default function PreferencesPage() {
                   control={form.control}
                   name="isActive"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border bg-card/50 p-4">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           data-testid="checkbox-active-subscription"
+                          className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm font-medium">
+                        <FormLabel className="text-sm font-medium text-foreground">
                           Active Subscription
                         </FormLabel>
-                        <p className="text-sm text-gray-600">
-                          Receive newsletters and updates from us
+                        <p className="text-sm text-muted-foreground">
+                          Receive newsletters and updates from NewsDrip
                         </p>
                       </div>
                     </FormItem>
@@ -294,7 +299,7 @@ export default function PreferencesPage() {
                       name="contactMethod"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-medium">How would you like to be contacted?</FormLabel>
+                          <FormLabel className="text-base font-medium text-foreground">How would you like to be contacted?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
@@ -302,16 +307,16 @@ export default function PreferencesPage() {
                               className="flex space-x-6"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="email" id="email" />
-                                <FormLabel htmlFor="email" className="flex items-center cursor-pointer">
-                                  <Mail className="h-4 w-4 mr-2" />
+                                <RadioGroupItem value="email" id="email" className="border-primary text-primary" />
+                                <FormLabel htmlFor="email" className="flex items-center cursor-pointer text-foreground">
+                                  <Mail className="h-4 w-4 mr-2 text-primary" />
                                   Email
                                 </FormLabel>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="sms" id="sms" />
-                                <FormLabel htmlFor="sms" className="flex items-center cursor-pointer">
-                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                <RadioGroupItem value="sms" id="sms" className="border-primary text-primary" />
+                                <FormLabel htmlFor="sms" className="flex items-center cursor-pointer text-foreground">
+                                  <MessageSquare className="h-4 w-4 mr-2 text-primary" />
                                   SMS
                                 </FormLabel>
                               </div>
@@ -330,12 +335,13 @@ export default function PreferencesPage() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Email Address</FormLabel>
+                              <FormLabel className="text-foreground">Email Address</FormLabel>
                               <FormControl>
                                 <Input
                                   type="email"
                                   placeholder="Enter your email address"
                                   data-testid="input-email"
+                                  className="border-border bg-background text-foreground placeholder:text-muted-foreground"
                                   {...field}
                                 />
                               </FormControl>
@@ -351,12 +357,13 @@ export default function PreferencesPage() {
                           name="phone"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Phone Number</FormLabel>
+                              <FormLabel className="text-foreground">Phone Number</FormLabel>
                               <FormControl>
                                 <Input
                                   type="tel"
                                   placeholder="Enter your phone number"
                                   data-testid="input-phone"
+                                  className="border-border bg-background text-foreground placeholder:text-muted-foreground"
                                   {...field}
                                 />
                               </FormControl>
@@ -373,8 +380,8 @@ export default function PreferencesPage() {
                       name="frequency"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-medium flex items-center">
-                            <Clock className="h-4 w-4 mr-2" />
+                          <FormLabel className="text-base font-medium text-foreground flex items-center">
+                            <Clock className="h-4 w-4 mr-2 text-primary" />
                             How often would you like to receive newsletters?
                           </FormLabel>
                           <FormControl>
@@ -384,16 +391,16 @@ export default function PreferencesPage() {
                               className="flex space-x-6"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="daily" id="daily" />
-                                <FormLabel htmlFor="daily" className="cursor-pointer">Daily</FormLabel>
+                                <RadioGroupItem value="daily" id="daily" className="border-primary text-primary" />
+                                <FormLabel htmlFor="daily" className="cursor-pointer text-foreground">Daily</FormLabel>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="weekly" id="weekly" />
-                                <FormLabel htmlFor="weekly" className="cursor-pointer">Weekly</FormLabel>
+                                <RadioGroupItem value="weekly" id="weekly" className="border-primary text-primary" />
+                                <FormLabel htmlFor="weekly" className="cursor-pointer text-foreground">Weekly</FormLabel>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="monthly" id="monthly" />
-                                <FormLabel htmlFor="monthly" className="cursor-pointer">Monthly</FormLabel>
+                                <RadioGroupItem value="monthly" id="monthly" className="border-primary text-primary" />
+                                <FormLabel htmlFor="monthly" className="cursor-pointer text-foreground">Monthly</FormLabel>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -408,7 +415,7 @@ export default function PreferencesPage() {
                       name="categoryIds"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-base font-medium">
+                          <FormLabel className="text-base font-medium text-foreground">
                             Choose your interests
                           </FormLabel>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -430,9 +437,10 @@ export default function PreferencesPage() {
                                             field.onChange(current.filter((id) => id !== category.id));
                                           }
                                         }}
+                                        className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                                       />
                                     </FormControl>
-                                    <FormLabel className="text-sm font-medium text-gray-700">
+                                    <FormLabel className="text-sm font-medium text-foreground">
                                       {category.name}
                                     </FormLabel>
                                   </FormItem>
@@ -448,11 +456,11 @@ export default function PreferencesPage() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border">
                   <Button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="flex-1"
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                     data-testid="button-update-preferences"
                   >
                     {updateMutation.isPending ? "Updating..." : "Update Preferences"}
@@ -464,7 +472,7 @@ export default function PreferencesPage() {
                       variant="outline"
                       onClick={handleUnsubscribe}
                       disabled={unsubscribeMutation.isPending}
-                      className="flex-1"
+                      className="flex-1 border-border text-foreground hover:bg-muted"
                       data-testid="button-unsubscribe"
                     >
                       {unsubscribeMutation.isPending ? "Unsubscribing..." : "Unsubscribe"}
@@ -477,11 +485,11 @@ export default function PreferencesPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
             Need help? Contact us at{" "}
-            <a href="mailto:support@newsletterpro.com" className="text-blue-600 hover:underline">
-              support@newsletterpro.com
+            <a href="mailto:support@newsdrip.com" className="text-primary hover:underline">
+              support@newsdrip.com
             </a>
           </p>
         </div>
