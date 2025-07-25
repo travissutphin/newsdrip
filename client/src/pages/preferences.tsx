@@ -14,17 +14,17 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CheckCircle, Mail, MessageSquare, Clock } from "lucide-react";
 
 const preferencesSchema = z.object({
-  email: z.string().email("Please enter a valid email address").optional(),
-  phone: z.string().min(10, "Please enter a valid phone number").optional(),
+  email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
+  phone: z.string().min(10, "Please enter a valid phone number").optional().or(z.literal("")),
   contactMethod: z.enum(["email", "sms"]),
   frequency: z.enum(["daily", "weekly", "monthly"]),
   categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
   isActive: z.boolean(),
 }).refine((data) => {
-  if (data.contactMethod === "email" && !data.email) {
+  if (data.contactMethod === "email" && (!data.email || data.email === "")) {
     return false;
   }
-  if (data.contactMethod === "sms" && !data.phone) {
+  if (data.contactMethod === "sms" && (!data.phone || data.phone === "")) {
     return false;
   }
   return true;
@@ -107,6 +107,7 @@ export default function PreferencesPage() {
       return await response.json();
     },
     onSuccess: (data) => {
+      console.log("Update successful:", data);
       setIsUpdated(true);
       // Invalidate and refetch the preferences query to show updated data
       queryClient.invalidateQueries({ queryKey: ["/api/preferences", token] });
@@ -117,6 +118,7 @@ export default function PreferencesPage() {
     },
     onError: (error) => {
       console.error("Update preferences error:", error);
+      console.error("Form errors:", form.formState.errors);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to update preferences",
@@ -149,7 +151,19 @@ export default function PreferencesPage() {
   });
 
   const onSubmit = (data: PreferencesFormData) => {
-    updateMutation.mutate(data);
+    console.log("Form submitted with data:", data);
+    console.log("Form validation errors:", form.formState.errors);
+    console.log("Form is valid:", form.formState.isValid);
+    
+    // Clean up empty strings to undefined for API
+    const cleanedData = {
+      ...data,
+      email: data.email || undefined,
+      phone: data.phone || undefined,
+    };
+    
+    console.log("Cleaned data for API:", cleanedData);
+    updateMutation.mutate(cleanedData);
   };
 
   const handleUnsubscribe = () => {
