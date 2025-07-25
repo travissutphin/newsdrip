@@ -46,14 +46,14 @@ export default function PreferencesPage() {
   
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="text-red-500 mb-4">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-8">
+            <div className="text-primary mb-4">
               <Mail className="h-12 w-12 mx-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Invalid Link</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Invalid Link</h1>
+            <p className="text-muted-foreground">
               This preferences link is invalid or has expired. Please check your email for the latest link.
             </p>
           </div>
@@ -180,10 +180,10 @@ export default function PreferencesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your preferences...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your preferences...</p>
         </div>
       </div>
     );
@@ -191,14 +191,14 @@ export default function PreferencesPage() {
 
   if (!subscriber) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="text-red-500 mb-4">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-8">
+            <div className="text-primary mb-4">
               <Mail className="h-12 w-12 mx-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Link Expired</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Link Expired</h1>
+            <p className="text-muted-foreground">
               This preferences link has expired or is no longer valid. Please subscribe again to manage your preferences.
             </p>
           </div>

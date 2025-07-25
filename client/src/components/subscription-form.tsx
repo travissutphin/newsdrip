@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { LightningIcon } from "@/components/newsdrip-logo";
 
 const subscriptionSchema = z.object({
   contactMethod: z.enum(["email", "sms"]),
@@ -42,6 +43,15 @@ export default function SubscriptionForm() {
     queryKey: ["/api/categories"],
     retry: 1,
   });
+
+  // Type for categories
+  interface Category {
+    id: number;
+    name: string;
+    description: string;
+  }
+
+  const typedCategories = categories as Category[];
 
   const form = useForm<SubscriptionFormData>({
     resolver: zodResolver(subscriptionSchema),
@@ -81,26 +91,39 @@ export default function SubscriptionForm() {
 
   if (isSubscribed) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-        <div className="mb-4">
-          <i className="fas fa-check-circle text-4xl text-secondary"></i>
+      <div className="bg-card rounded-xl shadow-sm border border-border p-8 text-center">
+        <div className="mb-6">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <LightningIcon className="w-8 h-8 text-primary" />
+          </div>
+          <h3 className="text-2xl font-bold text-primary mb-2">Welcome to NewsDrip!</h3>
+          <p className="text-muted-foreground mb-6">
+            Thank you for subscribing! You'll receive curated news updates based on your preferences.
+            <br />The gist of what matters, delivered fast.
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => setIsSubscribed(false)}
+            data-testid="button-subscribe-another"
+          >
+            Subscribe Another Contact
+          </Button>
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set!</h3>
-        <p className="text-gray-600 mb-6">
-          Thank you for subscribing. You'll receive updates based on your selected preferences.
-        </p>
-        <Button
-          variant="outline"
-          onClick={() => setIsSubscribed(false)}
-        >
-          Subscribe Another Contact
-        </Button>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+    <div className="bg-card rounded-xl shadow-sm border border-border p-8">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold text-foreground mb-2">
+          Stay Informed
+        </h2>
+        <p className="text-muted-foreground text-lg">
+          Get the gist of what matters. No fluff, just the essentials.
+        </p>
+      </div>
+      
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Contact Method Selection */}
@@ -109,7 +132,7 @@ export default function SubscriptionForm() {
             name="contactMethod"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base font-medium text-gray-900">
+                <FormLabel className="text-base font-medium text-foreground">
                   How would you like to receive updates?
                 </FormLabel>
                 <FormControl>
@@ -186,11 +209,11 @@ export default function SubscriptionForm() {
             name="categoryIds"
             render={() => (
               <FormItem>
-                <FormLabel className="text-base font-medium text-gray-700">
+                <FormLabel className="text-base font-medium text-foreground">
                   Choose your interests
                 </FormLabel>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  {categories.map((category: any) => (
+                  {typedCategories.map((category) => (
                     <FormField
                       key={category.id}
                       control={form.control}

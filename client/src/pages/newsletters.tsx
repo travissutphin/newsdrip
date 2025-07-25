@@ -65,14 +65,14 @@ export default function NewslettersView() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Newsletter Management</h2>
-            <p className="text-gray-600">Create, edit, and send newsletters to your subscribers</p>
+            <h2 className="text-2xl font-bold text-foreground">NewsDrip Newsletter Management</h2>
+            <p className="text-muted-foreground">Create, edit, and send newsletters to your subscribers</p>
           </div>
           <Button disabled>
             <i className="fas fa-plus mr-2"></i>Create Newsletter
           </Button>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
           <div className="h-4 bg-gray-200 rounded mb-4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (

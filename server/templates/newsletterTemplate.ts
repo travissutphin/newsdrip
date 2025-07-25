@@ -18,7 +18,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
     subscriberEmail,
     unsubscribeUrl,
     preferencesUrl,
-    companyName = "NewsletterPro",
+    companyName = "NewsDrip",
     companyAddress = "Your Company Address",
     categories
   } = data;
@@ -51,51 +51,52 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #333333;
-            background-color: #f5f5f5;
+            color: #f8fafc;
+            background-color: #334155;
         }
         .email-wrapper {
-            background-color: #f5f5f5;
+            background-color: #334155;
             padding: 20px 0;
         }
         .email-container {
             max-width: 680px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: #475569;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         
         /* Header Section */
         .header-bar {
-            background-color: #ffffff;
+            background-color: #475569;
             padding: 16px 32px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #64748b;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .header-date {
             font-size: 14px;
-            color: #6b7280;
+            color: #cbd5e1;
             margin: 0;
         }
         .header-links {
             font-size: 14px;
         }
         .header-links a {
-            color: #374151;
+            color: #f8fafc;
             text-decoration: none;
             margin-left: 16px;
         }
         .header-links a:hover {
+            color: #ef4444;
             text-decoration: underline;
         }
         
         /* Brand Header */
         .brand-header {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
             padding: 48px 32px;
             text-align: center;
@@ -120,26 +121,32 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             font-size: 36px;
             font-weight: 800;
             letter-spacing: -1px;
-            text-transform: uppercase;
         }
         .brand-logo .tagline {
             margin: 8px 0 0 0;
             font-size: 16px;
             opacity: 0.9;
-            font-weight: 400;
+            font-weight: 500;
+        }
+        .lightning-icon {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            vertical-align: middle;
         }
         
         /* Sponsor Section */
         .sponsor-section {
-            background-color: #f9fafb;
+            background-color: #374151;
             padding: 24px 32px;
             text-align: center;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #64748b;
         }
         .sponsor-text {
             font-size: 14px;
             font-weight: 600;
-            color: #6b7280;
+            color: #cbd5e1;
             margin: 0 0 8px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -147,14 +154,16 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         .sponsor-logo {
             font-size: 18px;
             font-weight: 700;
-            color: #2563eb;
+            color: #ef4444;
         }
         /* Content Section */
         .content {
             padding: 32px 32px 24px 32px;
+            background-color: #475569;
+            color: #f8fafc;
         }
         .newsletter-title {
-            color: #111827;
+            color: #f8fafc;
             font-size: 28px;
             font-weight: 700;
             margin: 0 0 24px 0;
@@ -163,7 +172,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         .newsletter-intro {
             font-size: 18px;
             font-weight: 600;
-            color: #374151;
+            color: #cbd5e1;
             margin: 0 0 24px 0;
             line-height: 1.4;
         }
@@ -171,29 +180,29 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             font-size: 16px;
             line-height: 1.7;
             margin: 0 0 18px 0;
-            color: #374151;
+            color: #e2e8f0;
         }
         .content ul, .content ol {
             font-size: 16px;
             line-height: 1.7;
             margin: 0 0 18px 24px;
-            color: #374151;
+            color: #e2e8f0;
         }
         .content li {
             margin-bottom: 8px;
         }
         .content a {
-            color: #2563eb;
+            color: #ef4444;
             text-decoration: underline;
         }
         .content a:hover {
-            color: #1d4ed8;
+            color: #dc2626;
         }
         
         /* Categories Section */
         .categories {
-            background-color: #f3f4f6;
-            border: 1px solid #e5e7eb;
+            background-color: #374151;
+            border: 1px solid #64748b;
             padding: 16px 20px;
             margin: 24px 0;
             border-radius: 8px;
@@ -202,7 +211,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             margin: 0 0 12px 0;
             font-size: 14px;
             font-weight: 600;
-            color: #6b7280;
+            color: #cbd5e1;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -212,7 +221,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             gap: 8px;
         }
         .category-tag {
-            background-color: #2563eb;
+            background-color: #ef4444;
             color: white;
             padding: 6px 12px;
             border-radius: 6px;
@@ -233,19 +242,19 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         .thank-you-section {
             text-align: center;
             padding: 24px 0;
-            background-color: #f9fafb;
+            background-color: #374151;
             margin: 32px 0;
             border-radius: 8px;
         }
         .thank-you-section p {
             font-size: 16px;
             font-weight: 600;
-            color: #374151;
+            color: #cbd5e1;
             margin: 0 0 16px 0;
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
             text-decoration: none;
             padding: 12px 24px;
@@ -256,25 +265,31 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             letter-spacing: 0.5px;
         }
         .cta-button:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             text-decoration: none;
         }
         /* Footer Section */
         .footer {
-            background-color: #f9fafb;
+            background-color: #374151;
             padding: 32px;
             text-align: center;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #64748b;
         }
         .footer-brand {
             font-size: 18px;
             font-weight: 700;
-            color: #111827;
-            margin: 0 0 8px 0;
+            color: #f8fafc;
+            margin: 0 0 4px 0;
+        }
+        .footer-tagline {
+            font-size: 14px;
+            color: #ef4444;
+            margin: 0 0 16px 0;
+            font-weight: 500;
         }
         .footer-address {
             font-size: 14px;
-            color: #6b7280;
+            color: #cbd5e1;
             margin: 0 0 24px 0;
             line-height: 1.5;
         }
@@ -283,7 +298,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             padding: 0;
         }
         .footer-links a {
-            color: #2563eb;
+            color: #ef4444;
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
@@ -293,24 +308,24 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         }
         .footer-links a:hover {
             text-decoration: underline;
-            color: #1d4ed8;
+            color: #dc2626;
         }
         .social-links {
             margin: 24px 0;
             padding: 16px 0;
-            border-top: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
+            border-top: 1px solid #64748b;
+            border-bottom: 1px solid #64748b;
         }
         .social-links a {
             display: inline-block;
             margin: 0 12px;
-            color: #6b7280;
+            color: #cbd5e1;
             text-decoration: none;
             font-size: 24px;
             transition: color 0.2s;
         }
         .social-links a:hover {
-            color: #2563eb;
+            color: #ef4444;
         }
         .unsubscribe {
             font-size: 12px;
@@ -419,8 +434,11 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             <!-- Brand Header -->
             <div class="brand-header">
                 <div class="brand-logo">
-                    <h1>Newsletter Pro</h1>
-                    <p class="tagline">Your daily dose of insights</p>
+                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
+                    </svg>
+                    <h1>NewsDrip</h1>
+                    <p class="tagline">The Gist. No Fluff.</p>
                 </div>
             </div>
             
@@ -453,40 +471,41 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
                 
                 <!-- Thank You Section -->
                 <div class="thank-you-section">
-                    <p>Thank you for reading Newsletter Pro!</p>
+                    <p>Thank you for reading NewsDrip!</p>
                     <a href="${preferencesUrl}" class="cta-button">Manage Subscription</a>
                 </div>
             </div>
             
             <!-- Footer -->
             <div class="footer">
-                <p class="footer-brand">Newsletter Pro</p>
+                <p class="footer-brand">NewsDrip</p>
+                <p class="footer-tagline">The Gist. No Fluff.</p>
                 <p class="footer-address">${safeCompanyAddress}</p>
                 
                 <div class="footer-links">
                     <a href="${preferencesUrl}">Update Preferences</a>
-                    <a href="mailto:support@newsletterpro.com">Contact Support</a>
-                    <a href="https://newsletterpro.com/privacy">Privacy Policy</a>
-                    <a href="https://newsletterpro.com/terms">Terms of Service</a>
+                    <a href="mailto:support@newsdrip.com">Contact Support</a>
+                    <a href="https://newsdrip.com/privacy">Privacy Policy</a>
+                    <a href="https://newsdrip.com/terms">Terms of Service</a>
                 </div>
                 
                 <div class="social-links">
-                    <a href="https://facebook.com/newsletterpro" aria-label="Facebook">📘</a>
-                    <a href="https://twitter.com/newsletterpro" aria-label="Twitter">🐦</a>
-                    <a href="https://linkedin.com/company/newsletterpro" aria-label="LinkedIn">💼</a>
-                    <a href="https://instagram.com/newsletterpro" aria-label="Instagram">📷</a>
+                    <a href="https://facebook.com/newsdrip" aria-label="Facebook">📘</a>
+                    <a href="https://twitter.com/newsdrip" aria-label="Twitter">🐦</a>
+                    <a href="https://linkedin.com/company/newsdrip" aria-label="LinkedIn">💼</a>
+                    <a href="https://instagram.com/newsdrip" aria-label="Instagram">📷</a>
                 </div>
                 
                 <div class="unsubscribe">
                     <p>
-                        You're receiving this email because you subscribed to Newsletter Pro.<br>
+                        You're receiving this email because you subscribed to NewsDrip.<br>
                         This newsletter was sent to: <strong>${safeEmail}</strong>
                     </p>
                     <p>
                         <a href="${unsubscribeUrl}">Unsubscribe</a> | 
                         <a href="${preferencesUrl}">Update Preferences</a>
                     </p>
-                    <p>© ${new Date().getFullYear()} Newsletter Pro. All rights reserved.</p>
+                    <p>© ${new Date().getFullYear()} NewsDrip. All rights reserved.</p>
                 </div>
             </div>
         </div>

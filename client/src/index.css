@@ -9,48 +9,55 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(210, 20%, 98%);
-  --foreground: hsl(220, 13%, 9%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215, 16%, 47%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(220, 13%, 9%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(220, 13%, 9%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(217, 91%, 60%);
+  /* NewsDrip Brand Colors */
+  --background: hsl(215, 28%, 17%);  /* Dark navy background */
+  --foreground: hsl(210, 40%, 98%);  /* White text */
+  --muted: hsl(215, 25%, 23%);       /* Darker muted background */
+  --muted-foreground: hsl(215, 16%, 65%); /* Light gray text */
+  --popover: hsl(215, 28%, 17%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(215, 25%, 20%);        /* Card background */
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(215, 20%, 30%);      /* Border color */
+  --input: hsl(215, 25%, 23%);       /* Input background */
+  --primary: hsl(0, 84%, 60%);       /* NewsDrip red */
   --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(142, 76%, 36%);
+  --secondary: hsl(215, 25%, 25%);   /* Secondary gray */
   --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(248, 95%, 70%);
+  --accent: hsl(0, 84%, 60%);        /* Accent red */
   --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 84%, 60%);
+  --destructive: hsl(0, 62%, 50%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(217, 91%, 60%);
-  --radius: 0.5rem;
+  --ring: hsl(0, 84%, 60%);
+  --radius: 0.75rem;
+  
+  /* NewsDrip specific colors */
+  --newsdrip-red: hsl(0, 84%, 60%);
+  --newsdrip-dark: hsl(215, 28%, 17%);
+  --newsdrip-light: hsl(210, 40%, 98%);
 }
 
 .dark {
-  --background: hsl(224, 71%, 4%);
+  /* Dark mode uses same NewsDrip colors */
+  --background: hsl(215, 28%, 17%);
   --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(223, 47%, 11%);
-  --muted-foreground: hsl(215, 16%, 57%);
-  --popover: hsl(224, 71%, 4%);
+  --muted: hsl(215, 25%, 23%);
+  --muted-foreground: hsl(215, 16%, 65%);
+  --popover: hsl(215, 28%, 17%);
   --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(224, 71%, 4%);
+  --card: hsl(215, 25%, 20%);
   --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(215, 28%, 17%);
-  --input: hsl(215, 28%, 17%);
-  --primary: hsl(217, 91%, 60%);
-  --primary-foreground: hsl(222, 84%, 5%);
-  --secondary: hsl(142, 76%, 36%);
+  --border: hsl(215, 20%, 30%);
+  --input: hsl(215, 25%, 23%);
+  --primary: hsl(0, 84%, 60%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(215, 25%, 25%);
   --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(248, 95%, 70%);
-  --accent-foreground: hsl(222, 84%, 5%);
-  --destructive: hsl(0, 63%, 31%);
+  --accent: hsl(0, 84%, 60%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62%, 50%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(217, 91%, 60%);
+  --ring: hsl(0, 84%, 60%);
 }
 
 @layer base {

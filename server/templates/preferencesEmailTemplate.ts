@@ -30,7 +30,7 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
   const safeCategories = data.categories.map(escapeHtml).join(", ");
   const safeFrequency = escapeHtml(data.frequency);
 
-  const subject = "Welcome to NewsletterPro! 🎉";
+  const subject = "Welcome to NewsDrip! ⚡";
 
   const html = `
 <!DOCTYPE html>
@@ -38,25 +38,25 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to NewsletterPro</title>
+    <title>Welcome to NewsDrip</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #f8fafc;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f8fafc;
+            background-color: #334155;
         }
         .container {
-            background: white;
+            background: #475569;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -66,19 +66,27 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
             font-size: 28px;
             font-weight: 700;
         }
+        .lightning-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
         .content {
             padding: 30px;
+            color: #e2e8f0;
         }
         .highlight-box {
-            background: #f1f5f9;
-            border-left: 4px solid #3b82f6;
+            background: #334155;
+            border-left: 4px solid #ef4444;
             padding: 15px;
             margin: 20px 0;
             border-radius: 4px;
         }
         .button {
             display: inline-block;
-            background: #3b82f6;
+            background: #ef4444;
             color: white;
             text-decoration: none;
             padding: 12px 24px;
@@ -88,28 +96,28 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
             text-align: center;
         }
         .button:hover {
-            background: #2563eb;
+            background: #dc2626;
         }
         .button.secondary {
-            background: #6b7280;
+            background: #64748b;
         }
         .button.secondary:hover {
-            background: #4b5563;
+            background: #475569;
         }
         .footer {
-            background: #f8fafc;
+            background: #334155;
             padding: 20px;
             text-align: center;
-            color: #6b7280;
+            color: #cbd5e1;
             font-size: 14px;
         }
         .footer a {
-            color: #3b82f6;
+            color: #ef4444;
             text-decoration: none;
         }
         .preferences-summary {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
+            background: #334155;
+            border: 1px solid #64748b;
             border-radius: 6px;
             padding: 15px;
             margin: 20px 0;
@@ -123,34 +131,37 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
 <body>
     <div class="container">
         <div class="header">
-            <div class="emoji">🎉</div>
-            <h1>Welcome to NewsletterPro!</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">Thank you for subscribing to our newsletter</p>
+            <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
+            </svg>
+            <h1>Welcome to NewsDrip!</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">The Gist. No Fluff.</p>
         </div>
         
         <div class="content">
-            <h2 style="color: #1f2937; margin-top: 0;">Hi there! 👋</h2>
+            <h2 style="color: #f8fafc; margin-top: 0;">Hi there! ⚡</h2>
             
-            <p>Welcome to the NewsletterPro community! We're thrilled to have you on board.</p>
+            <p>Welcome to the NewsDrip community! We're thrilled to have you on board and ready to deliver the news that matters, fast.</p>
             
             <div class="preferences-summary">
-                <h3 style="margin-top: 0; color: #065f46;">📋 Your Subscription Details</h3>
+                <h3 style="margin-top: 0; color: #ef4444;">⚡ Your Subscription Details</h3>
                 <p><strong>Email:</strong> ${safeEmail}</p>
                 <p><strong>Frequency:</strong> ${safeFrequency}</p>
                 <p><strong>Categories:</strong> ${safeCategories}</p>
             </div>
             
-            <p>You'll start receiving newsletters based on your selected preferences. Here's what you can expect:</p>
+            <p>You'll start receiving NewsDrip newsletters based on your selected preferences. Here's what you can expect:</p>
             
-            <ul style="color: #4b5563;">
-                <li>📰 High-quality content tailored to your interests</li>
-                <li>🎯 No spam - only valuable updates</li>
+            <ul style="color: #e2e8f0;">
+                <li>⚡ Lightning-fast breaking news and insights</li>
+                <li>🎯 No fluff - only essential information</li>
+                <li>📰 Curated quality content without clickbait</li>
                 <li>⚙️ Easy preference management anytime</li>
                 <li>🚫 One-click unsubscribe option</li>
             </ul>
             
             <div class="highlight-box">
-                <h3 style="margin-top: 0; color: #1e40af;">🔧 Manage Your Preferences</h3>
+                <h3 style="margin-top: 0; color: #ef4444;">⚡ Manage Your Preferences</h3>
                 <p>Want to update your subscription settings? You can modify your preferences, change your email frequency, or update your categories anytime.</p>
                 
                 <div style="text-align: center; margin: 20px 0;">
@@ -164,7 +175,8 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
             
             <p style="margin-bottom: 0;">
                 Best regards,<br>
-                <strong>The NewsletterPro Team</strong>
+                <strong>The NewsDrip Team</strong><br>
+                <em>The Gist. No Fluff.</em>
             </p>
         </div>
         
@@ -174,7 +186,7 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
                 <a href="${data.unsubscribeUrl}">Unsubscribe</a>
             </p>
             <p style="margin: 10px 0 0 0;">
-                © 2025 NewsletterPro. All rights reserved.
+                © 2025 NewsDrip. All rights reserved.
             </p>
         </div>
     </div>
