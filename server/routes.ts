@@ -202,10 +202,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Invalid or expired unsubscribe link" });
       }
 
-      // Deactivate subscriber
+      // Deactivate subscriber and remove all category associations
       await storage.updateSubscriber(subscriber.id, { isActive: false });
+      await storage.setSubscriberCategories(subscriber.id, []); // Remove all categories
+      
+      // Get updated subscriber data to return
+      const updatedSubscriber = await storage.getSubscriber(subscriber.id);
 
-      res.json({ message: "Successfully unsubscribed from all newsletters" });
+      res.json({ 
+        message: "Successfully unsubscribed from all newsletters",
+        subscriber: updatedSubscriber
+      });
     } catch (error) {
       console.error("Error unsubscribing:", error);
       res.status(500).json({ message: "Failed to unsubscribe" });

@@ -132,13 +132,18 @@ export default function PreferencesPage() {
       const response = await apiRequest("POST", `/api/unsubscribe/${token}`, {});
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Unsubscribe successful:", data);
       setIsUpdated(true);
+      // Invalidate and refetch the preferences query to show updated data
+      queryClient.invalidateQueries({ queryKey: ["/api/preferences", token] });
       toast({
         title: "Unsubscribed",
         description: "You have been successfully unsubscribed from all newsletters.",
       });
+      // Update form to reflect unsubscribed state
       form.setValue("isActive", false);
+      form.setValue("categoryIds", []); // Clear all categories
     },
     onError: (error) => {
       console.error("Unsubscribe error:", error);
@@ -167,7 +172,8 @@ export default function PreferencesPage() {
   };
 
   const handleUnsubscribe = () => {
-    if (confirm("Are you sure you want to unsubscribe from all newsletters?")) {
+    if (confirm("Are you sure you want to unsubscribe from all newsletters? This will deactivate your subscription and remove all category preferences.")) {
+      console.log("Unsubscribing user...");
       unsubscribeMutation.mutate();
     }
   };
