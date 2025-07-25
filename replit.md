@@ -21,6 +21,21 @@ Preferred communication style: Simple, everyday language.
 - **Updated**: Dynamic URL generation for deployed domains using REPLIT_DOMAINS environment variable
 - **Enhanced**: Update Preferences and Unsubscribe buttons with proper save confirmation and data integrity
 
+## Recent Changes (July 25, 2025)
+
+✓ **Newsletter Design Update - Morning Brew Inspired Template**
+- Redesigned email newsletter template with Newsletter Pro branding and blue color scheme
+- Implemented Morning Brew-style layout with clean, professional structure
+- Added date header bar with "View Online", "Sign Up", and "Shop" links
+- Created prominent blue gradient brand header with "Newsletter Pro" branding
+- Included "Together With" sponsor section for partnership opportunities
+- Enhanced typography with better hierarchy and readability
+- Improved mobile responsiveness for all screen sizes
+- Updated footer with comprehensive links and social media integration
+- Preserved all existing functionality: manage subscription, unsubscribe, and preference management
+- Maintained security features: HTML escaping, XSS prevention, and safe content formatting
+- Created matching text version for email clients that don't support HTML
+
 ## System Architecture
 
 ### Frontend Architecture
