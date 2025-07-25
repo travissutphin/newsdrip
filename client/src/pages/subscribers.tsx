@@ -67,15 +67,15 @@ export default function SubscribersView() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Subscriber Management</h2>
-            <p className="text-gray-600">View and manage your newsletter subscribers</p>
+            <h2 className="text-2xl font-bold text-foreground">NewsDrip Subscriber Management</h2>
+            <p className="text-muted-foreground">View and manage your newsletter subscribers</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
-          <div className="h-4 bg-gray-200 rounded mb-4"></div>
+        <div className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
+          <div className="h-4 bg-muted rounded mb-4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-gray-200 rounded"></div>
+              <div key={i} className="h-16 bg-muted rounded"></div>
             ))}
           </div>
         </div>
@@ -86,19 +86,26 @@ export default function SubscribersView() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Subscriber Management</h2>
-          <p className="text-gray-600">View and manage your newsletter subscribers</p>
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 2L3 14h6l-2 8 10-12h-6l2-8z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">NewsDrip Subscriber Management</h2>
+            <p className="text-muted-foreground">View and manage your newsletter subscribers</p>
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label htmlFor="filter-method" className="block text-sm font-medium text-gray-700 mb-2">Contact Method</label>
+            <label htmlFor="filter-method" className="block text-sm font-medium text-foreground mb-2">Contact Method</label>
             <Select value={methodFilter} onValueChange={setMethodFilter}>
-              <SelectTrigger>
+              <SelectTrigger className="border-border bg-background text-foreground">
                 <SelectValue placeholder="All Methods" />
               </SelectTrigger>
               <SelectContent>
@@ -109,9 +116,9 @@ export default function SubscribersView() {
             </Select>
           </div>
           <div>
-            <label htmlFor="filter-status" className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label htmlFor="filter-status" className="block text-sm font-medium text-foreground mb-2">Status</label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
+              <SelectTrigger className="border-border bg-background text-foreground">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -122,36 +129,37 @@ export default function SubscribersView() {
             </Select>
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="search-subscribers" className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <label htmlFor="search-subscribers" className="block text-sm font-medium text-foreground mb-2">Search</label>
             <Input
               id="search-subscribers"
               placeholder="Search subscribers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="border-border bg-background text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
       </div>
 
       {/* Subscriber Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Method</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Categories</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Frequency</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {filteredSubscribers?.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                     {!subscribers || (subscribers as any[]).length === 0 
                       ? "No subscribers found. Subscribers will appear here when they sign up."
                       : "No subscribers match your filters."}
@@ -161,7 +169,7 @@ export default function SubscribersView() {
                 filteredSubscribers?.map((subscriber: any) => (
                   <tr key={subscriber.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-foreground">
                         {subscriber.email || subscriber.phone}
                       </div>
                     </td>
@@ -170,24 +178,24 @@ export default function SubscribersView() {
                         variant="outline"
                         className={
                           subscriber.contactMethod === "email"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                            ? "bg-primary/10 text-primary border-primary"
+                            : "bg-green-500/10 text-green-600 border-green-500"
                         }
                       >
                         <i className={`fas fa-${subscriber.contactMethod === "email" ? "envelope" : "sms"} mr-1`}></i>
                         {subscriber.contactMethod.toUpperCase()}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       <div className="flex flex-wrap gap-1">
                         {subscriber.categories?.map((category: any) => (
-                          <Badge key={category.id} variant="outline">
+                          <Badge key={category.id} variant="outline" className="border-border text-foreground">
                             {category.name}
                           </Badge>
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {subscriber.frequency}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -195,14 +203,14 @@ export default function SubscribersView() {
                         variant={subscriber.isActive ? "default" : "secondary"}
                         className={
                           subscriber.isActive
-                            ? "bg-secondary text-white"
-                            : "bg-gray-100 text-gray-800"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
                         }
                       >
                         {subscriber.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {new Date(subscriber.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -210,7 +218,7 @@ export default function SubscribersView() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(subscriber.id)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                         disabled={deleteMutation.isPending}
                       >
                         Remove
