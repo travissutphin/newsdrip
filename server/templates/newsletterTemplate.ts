@@ -6,6 +6,7 @@ interface NewsletterTemplateData {
   subscriberEmail: string;
   unsubscribeUrl: string;
   preferencesUrl: string;
+  viewOnlineUrl?: string;
   companyName?: string;
   companyAddress?: string;
   categories: string[];
@@ -18,6 +19,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
     subscriberEmail,
     unsubscribeUrl,
     preferencesUrl,
+    viewOnlineUrl,
     companyName = "NewsDrip",
     companyAddress = "Your Company Address",
     categories
@@ -426,7 +428,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             <div class="header-bar">
                 <p class="header-date">${currentDate}</p>
                 <div class="header-links">
-                    <a href="${preferencesUrl}">View Online</a>
+                    <a href="${viewOnlineUrl || preferencesUrl}">View Online</a>
                 </div>
             </div>
             

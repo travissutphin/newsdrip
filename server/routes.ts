@@ -344,6 +344,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   categories: categoryNames,
                   unsubscribeToken: subscriber.unsubscribeToken || '',
                   preferencesToken: subscriber.preferencesToken || '',
+                  newsletterId: newsletter.id,
                 });
                 
                 if (emailSent) {

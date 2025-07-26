@@ -21,6 +21,7 @@ interface NewsletterEmailParams {
   categories: string[];
   unsubscribeToken: string;
   preferencesToken: string;
+  newsletterId: number;
 }
 
 export async function sendNewsletterEmail(params: NewsletterEmailParams): Promise<boolean> {
@@ -28,6 +29,14 @@ export async function sendNewsletterEmail(params: NewsletterEmailParams): Promis
     
   const unsubscribeUrl = `${baseUrl}/api/unsubscribe/${params.unsubscribeToken}`;
   const preferencesUrl = `${baseUrl}/preferences?token=${params.preferencesToken}`;
+  
+  // Generate the newsletter HTML page URL
+  const slug = params.title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  const viewOnlineUrl = `${baseUrl}/newsletters/${slug}-${params.newsletterId}.html`;
 
   const templateData = {
     title: params.title,
@@ -35,8 +44,9 @@ export async function sendNewsletterEmail(params: NewsletterEmailParams): Promis
     subscriberEmail: params.to,
     unsubscribeUrl,
     preferencesUrl,
+    viewOnlineUrl,
     categories: params.categories,
-    companyName: "NewsletterPro",
+    companyName: "NewsDrip",
     companyAddress: "Built with ❤️ on Replit"
   };
 
