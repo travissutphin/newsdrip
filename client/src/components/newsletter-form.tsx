@@ -341,7 +341,8 @@ Or use keyboard shortcuts: Ctrl+B for bold, Ctrl+I for italic, Ctrl+K for links"
                     {...field}
                     ref={(e) => {
                       field.ref(e);
-                      textareaRef.current = e;
+                      // Use type assertion since we know the ref is mutable
+                      (textareaRef as any).current = e;
                     }}
                     onKeyDown={(e) => {
                       if (e.ctrlKey || e.metaKey) {

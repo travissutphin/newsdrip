@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
@@ -307,7 +308,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           subject: newsletter.subject || newsletter.title,
           content: newsletter.content,
           categories: categories.map(c => c.name),
-          createdAt: newsletter.createdAt || new Date().toISOString(),
+          createdAt: typeof newsletter.createdAt === 'string' ? newsletter.createdAt : new Date().toISOString(),
         });
         console.log(`Newsletter HTML page created: ${htmlPageUrl}`);
       } catch (htmlError) {
@@ -429,7 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               subject: fullNewsletter.subject || fullNewsletter.title,
               content: fullNewsletter.content,
               categories: categories.map(c => c.name),
-              createdAt: fullNewsletter.createdAt || new Date().toISOString(),
+              createdAt: typeof fullNewsletter.createdAt === 'string' ? fullNewsletter.createdAt : new Date().toISOString(),
             });
           }
         } catch (htmlError) {
@@ -597,6 +598,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <p>We're sorry to see you go! You will no longer receive newsletters from us.</p>
             <p>If this was a mistake, you can always subscribe again on our website.</p>
             <a href="/" class="button">Return to Website</a>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error("Unsubscribe error:", error);
+      res.status(500).send(`
+        <html>
+          <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;">
+            <h2 style="color: #dc3545;">Error</h2>
+            <p>An error occurred while processing your unsubscribe request.</p>
+            <p>Please try again later or contact support.</p>
+          </body>
+        </html>
+      `);
+    }
+  });
 
   // Newsletter archive page
   app.get('/api/newsletters/archive', async (req, res) => {
@@ -630,24 +647,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching newsletter archive:", error);
       res.status(500).json({ message: "Failed to fetch newsletter archive" });
-    }
-  });
-
-
-          </body>
-        </html>
-      `);
-    } catch (error) {
-      console.error("Unsubscribe error:", error);
-      res.status(500).send(`
-        <html>
-          <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;">
-            <h2 style="color: #dc3545;">Error</h2>
-            <p>An error occurred while processing your unsubscribe request.</p>
-            <p>Please try again later or contact support.</p>
-          </body>
-        </html>
-      `);
     }
   });
 
