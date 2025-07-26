@@ -359,7 +359,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         .cta-button {
             display: inline-block;
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            color: white !important;
             padding: 0.75rem 1.5rem;
             text-decoration: none;
             border-radius: 6px;
@@ -371,6 +371,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         
         .cta-button:hover {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white !important;
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
         }
