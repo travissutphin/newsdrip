@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertSubscriberSchema, insertNewsletterSchema } from "@shared/schema";
 import { sendEmail, sendNewsletterEmail, sendWelcomeEmail, sendPreferencesUpdatedEmail } from "./services/emailService";
+import { createNewsletterHtmlPage, deleteNewsletterHtmlPage, updateNewsletterHtmlPage } from "./services/htmlPageService";
 import { escapeHtml, getSafeErrorMessage } from "./utils/security";
 import { z } from "zod";
 import { nanoid } from "nanoid";
@@ -30,6 +31,9 @@ function getBaseUrl(req: Request): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static newsletter HTML pages
+  app.use('/newsletters', express.static('static/newsletters'));
+  
   // Auth middleware
   await setupAuth(app);
 
@@ -294,6 +298,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set categories
       await storage.setNewsletterCategories(newsletter.id, categoryIds);
 
+      // Generate HTML page for the newsletter
+      try {
+        const categories = await storage.getCategoriesByIds(categoryIds);
+        const htmlPageUrl = await createNewsletterHtmlPage({
+          id: newsletter.id,
+          title: newsletter.title,
+          subject: newsletter.subject || newsletter.title,
+          content: newsletter.content,
+          categories: categories.map(c => c.name),
+          createdAt: newsletter.createdAt || new Date().toISOString(),
+        });
+        console.log(`Newsletter HTML page created: ${htmlPageUrl}`);
+      } catch (htmlError) {
+        console.error('Failed to create newsletter HTML page:', htmlError);
+        // Continue with newsletter creation even if HTML page fails
+      }
+
       // If sending, deliver to subscribers
       if (action === 'send') {
         try {
@@ -393,6 +414,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.setNewsletterCategories(id, categoryIds);
       }
 
+      // Update HTML page if newsletter content changed
+      if (data.title || data.content) {
+        try {
+          const fullNewsletter = await storage.getNewsletter(id);
+          if (fullNewsletter) {
+            const categories = categoryIds 
+              ? await storage.getCategoriesByIds(categoryIds)
+              : await storage.getNewsletterCategories(id);
+            
+            await updateNewsletterHtmlPage({
+              id: fullNewsletter.id,
+              title: fullNewsletter.title,
+              subject: fullNewsletter.subject || fullNewsletter.title,
+              content: fullNewsletter.content,
+              categories: categories.map(c => c.name),
+              createdAt: fullNewsletter.createdAt || new Date().toISOString(),
+            });
+          }
+        } catch (htmlError) {
+          console.error('Failed to update newsletter HTML page:', htmlError);
+          // Continue with newsletter update even if HTML page fails
+        }
+      }
+
       res.json({ message: 'Newsletter updated!', newsletter });
     } catch (error) {
       console.error("Newsletter update error:", error);
@@ -405,7 +450,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/admin/newsletters/:id', isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      
+      // Get newsletter data before deletion for HTML page cleanup
+      const newsletter = await storage.getNewsletter(id);
+      
       await storage.deleteNewsletter(id);
+      
+      // Clean up HTML page
+      if (newsletter) {
+        try {
+          await deleteNewsletterHtmlPage(newsletter.id, newsletter.title);
+        } catch (htmlError) {
+          console.error('Failed to delete newsletter HTML page:', htmlError);
+          // Continue with deletion even if HTML cleanup fails
+        }
+      }
+      
       res.json({ message: 'Newsletter deleted!' });
     } catch (error) {
       console.error("Newsletter deletion error:", error);
@@ -537,6 +597,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <p>We're sorry to see you go! You will no longer receive newsletters from us.</p>
             <p>If this was a mistake, you can always subscribe again on our website.</p>
             <a href="/" class="button">Return to Website</a>
+
+  // Newsletter archive page
+  app.get('/api/newsletters/archive', async (req, res) => {
+    try {
+      const newsletters = await storage.getPublishedNewsletters();
+      
+      const newslettersWithDetails = await Promise.all(
+        newsletters.map(async (newsletter) => {
+          const categories = await storage.getNewsletterCategories(newsletter.id);
+          
+          // Generate slug for URL
+          const slug = newsletter.title.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim();
+          
+          return {
+            id: newsletter.id,
+            title: newsletter.title,
+            subject: newsletter.subject,
+            excerpt: newsletter.content.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
+            categories: categories.map(c => c.name),
+            createdAt: newsletter.createdAt,
+            htmlUrl: `/newsletters/${slug}-${newsletter.id}.html`
+          };
+        })
+      );
+
+      res.json(newslettersWithDetails);
+    } catch (error) {
+      console.error("Error fetching newsletter archive:", error);
+      res.status(500).json({ message: "Failed to fetch newsletter archive" });
+    }
+  });
+
+
           </body>
         </html>
       `);

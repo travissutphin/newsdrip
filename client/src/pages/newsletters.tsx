@@ -226,10 +226,28 @@ export default function NewslettersView() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(newsletter)}
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 mr-4"
+                        className="text-primary hover:text-primary/80 hover:bg-primary/10 mr-2"
                       >
                         Edit
                       </Button>
+                      {newsletter.status === 'sent' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const slug = newsletter.title.toLowerCase()
+                              .replace(/[^a-z0-9\s-]/g, '')
+                              .replace(/\s+/g, '-')
+                              .replace(/-+/g, '-')
+                              .trim();
+                            window.open(`/newsletters/${slug}-${newsletter.id}.html`, '_blank');
+                          }}
+                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 mr-2"
+                        >
+                          <i className="fas fa-external-link-alt mr-1"></i>
+                          View
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"

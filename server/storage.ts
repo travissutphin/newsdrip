@@ -27,12 +27,12 @@ export interface IStorage {
   // (IMPORTANT) these user operations are mandatory for Replit Auth.
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // Category operations
   getCategories(): Promise<Category[]>;
   getCategory(id: number): Promise<Category | undefined>;
   getCategoriesByIds(ids: number[]): Promise<Category[]>;
-  
+
   // Subscriber operations
   getSubscribers(): Promise<Subscriber[]>;
   getSubscriber(id: number): Promise<Subscriber | undefined>;
@@ -42,22 +42,22 @@ export interface IStorage {
   updateSubscriber(id: number, subscriber: Partial<InsertSubscriber>): Promise<Subscriber>;
   deleteSubscriber(id: number): Promise<void>;
   getSubscribersByCategories(categoryIds: number[]): Promise<Subscriber[]>;
-  
+
   // Subscriber category operations
   getSubscriberCategories(subscriberId: number): Promise<Category[]>;
   setSubscriberCategories(subscriberId: number, categoryIds: number[]): Promise<void>;
-  
+
   // Newsletter operations
   getNewsletters(): Promise<Newsletter[]>;
   getNewsletter(id: number): Promise<Newsletter | undefined>;
   createNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
   updateNewsletter(id: number, newsletter: Partial<InsertNewsletter>): Promise<Newsletter>;
   deleteNewsletter(id: number): Promise<void>;
-  
+
   // Newsletter category operations
   getNewsletterCategories(newsletterId: number): Promise<Category[]>;
   setNewsletterCategories(newsletterId: number, categoryIds: number[]): Promise<void>;
-  
+
   // Delivery operations
   createDelivery(delivery: {
     newsletterId: number;
@@ -67,7 +67,7 @@ export interface IStorage {
   }): Promise<Delivery>;
   updateDeliveryStatus(id: number, status: string, openedAt?: Date): Promise<void>;
   getDeliveries(): Promise<Delivery[]>;
-  
+
   // Analytics
   getSubscriberStats(): Promise<{
     total: number;
@@ -172,9 +172,9 @@ export class DatabaseStorage implements IStorage {
       .selectDistinct({ subscriberId: subscriberCategories.subscriberId })
       .from(subscriberCategories)
       .where(inArray(subscriberCategories.categoryId, categoryIds));
-    
+
     if (subscriberIds.length === 0) return [];
-    
+
     return await db
       .select()
       .from(subscribers)
@@ -193,14 +193,14 @@ export class DatabaseStorage implements IStorage {
       .from(subscriberCategories)
       .innerJoin(categories, eq(subscriberCategories.categoryId, categories.id))
       .where(eq(subscriberCategories.subscriberId, subscriberId));
-    
+
     return result.map(r => r.category);
   }
 
   async setSubscriberCategories(subscriberId: number, categoryIds: number[]): Promise<void> {
     // Remove existing categories
     await db.delete(subscriberCategories).where(eq(subscriberCategories.subscriberId, subscriberId));
-    
+
     // Add new categories
     if (categoryIds.length > 0) {
       await db.insert(subscriberCategories).values(
@@ -218,8 +218,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNewsletter(id: number): Promise<Newsletter | undefined> {
-    const [newsletter] = await db.select().from(newsletters).where(eq(newsletters.id, id));
-    return newsletter;
+    const result = await db.select().from(newsletters).where(eq(newsletters.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getPublishedNewsletters() {
+    return await db.select().from(newsletters)
+      .where(eq(newsletters.status, 'sent'))
+      .orderBy(desc(newsletters.createdAt));
   }
 
   async createNewsletter(newsletterData: InsertNewsletter): Promise<Newsletter> {
@@ -250,14 +256,14 @@ export class DatabaseStorage implements IStorage {
       .from(newsletterCategories)
       .innerJoin(categories, eq(newsletterCategories.categoryId, categories.id))
       .where(eq(newsletterCategories.newsletterId, newsletterId));
-    
+
     return result.map(r => r.category);
   }
 
   async setNewsletterCategories(newsletterId: number, categoryIds: number[]): Promise<void> {
     // Remove existing categories
     await db.delete(newsletterCategories).where(eq(newsletterCategories.newsletterId, newsletterId));
-    
+
     // Add new categories
     if (categoryIds.length > 0) {
       await db.insert(newsletterCategories).values(
