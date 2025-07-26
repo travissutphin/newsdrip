@@ -255,7 +255,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         .cta-button {
             display: inline-block;
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            color: white !important;
             text-decoration: none;
             padding: 12px 24px;
             border-radius: 8px;
@@ -266,6 +266,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         }
         .cta-button:hover {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white !important;
             text-decoration: none;
         }
         /* Footer Section */
@@ -426,8 +427,6 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
                 <p class="header-date">${currentDate}</p>
                 <div class="header-links">
                     <a href="${preferencesUrl}">View Online</a>
-                    <a href="${preferencesUrl}">Sign Up</a>
-                    <a href="https://example.com">Shop</a>
                 </div>
             </div>
             
@@ -440,12 +439,6 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
                     <h1>NewsDrip</h1>
                     <p class="tagline">The Gist. No Fluff.</p>
                 </div>
-            </div>
-            
-            <!-- Sponsor Section -->
-            <div class="sponsor-section">
-                <p class="sponsor-text">Together With</p>
-                <div class="sponsor-logo">Your Business Partner</div>
             </div>
             
             <!-- Content -->
@@ -502,8 +495,10 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
                         This newsletter was sent to: <strong>${safeEmail}</strong>
                     </p>
                     <p>
+                        <div class="footer-links">
                         <a href="${unsubscribeUrl}">Unsubscribe</a> | 
                         <a href="${preferencesUrl}">Update Preferences</a>
+                        </div>
                     </p>
                     <p>© ${new Date().getFullYear()} NewsDrip. All rights reserved.</p>
                 </div>
@@ -559,9 +554,9 @@ Thank you for reading Newsletter Pro!
 Manage Subscription: ${preferencesUrl}
 
 Update Preferences: ${preferencesUrl}
-Contact Support: support@newsletterpro.com
-Privacy Policy: https://newsletterpro.com/privacy
-Terms of Service: https://newsletterpro.com/terms
+Contact Support: support@newsdrip.app
+Privacy Policy: https://newsdrip.app/privacy
+Terms of Service: https://newsdrip.app/terms
 
 Follow us:
 Facebook: https://facebook.com/newsletterpro
