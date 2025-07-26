@@ -66,6 +66,50 @@ export function safeFormatContent(content: string): string {
 }
 
 /**
+ * Sanitizes HTML content for newsletter display
+ * Allows safe HTML tags while preventing XSS
+ * @param content - The HTML content to sanitize
+ * @returns Sanitized HTML content
+ */
+export function sanitizeHtmlContent(content: string): string {
+  if (!content || typeof content !== 'string') {
+    return '';
+  }
+  
+  // List of allowed HTML tags for newsletter content
+  const allowedTags = [
+    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'a', 'img', 'div', 'span', 'blockquote'
+  ];
+  
+  // Basic sanitization - remove script tags and dangerous attributes
+  let sanitized = content
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers
+    .replace(/javascript:/gi, '') // Remove javascript: URLs
+    .replace(/data:/gi, ''); // Remove data: URLs for security
+  
+  // Apply email-safe inline styles to common elements
+  sanitized = sanitized
+    .replace(/<h1[^>]*>/gi, '<h1 style="color: #ef4444; font-size: 24px; font-weight: 700; margin: 24px 0 16px 0; line-height: 1.3;">')
+    .replace(/<h2[^>]*>/gi, '<h2 style="color: #ef4444; font-size: 20px; font-weight: 600; margin: 20px 0 12px 0; line-height: 1.3;">')
+    .replace(/<h3[^>]*>/gi, '<h3 style="color: #f8fafc; font-size: 18px; font-weight: 600; margin: 16px 0 12px 0; line-height: 1.3;">')
+    .replace(/<p[^>]*>/gi, '<p style="color: #e2e8f0; margin: 12px 0; line-height: 1.6;">')
+    .replace(/<strong[^>]*>/gi, '<strong style="color: #f8fafc; font-weight: 700;">')
+    .replace(/<b[^>]*>/gi, '<b style="color: #f8fafc; font-weight: 700;">')
+    .replace(/<em[^>]*>/gi, '<em style="color: #e2e8f0; font-style: italic;">')
+    .replace(/<i[^>]*>/gi, '<i style="color: #e2e8f0; font-style: italic;">')
+    .replace(/<ul[^>]*>/gi, '<ul style="margin: 12px 0; padding-left: 20px; color: #e2e8f0;">')
+    .replace(/<ol[^>]*>/gi, '<ol style="margin: 12px 0; padding-left: 20px; color: #e2e8f0;">')
+    .replace(/<li[^>]*>/gi, '<li style="margin: 4px 0; color: #e2e8f0;">')
+    .replace(/<a\s+href="([^"]*)"[^>]*>/gi, '<a href="$1" style="color: #ef4444; text-decoration: underline;">')
+    .replace(/<blockquote[^>]*>/gi, '<blockquote style="border-left: 4px solid #ef4444; margin: 16px 0; padding: 12px 16px; background-color: #475569; color: #e2e8f0;">');
+  
+  return sanitized;
+}
+
+/**
  * Sanitizes email addresses for display
  * @param email - The email address to sanitize
  * @returns Sanitized email address

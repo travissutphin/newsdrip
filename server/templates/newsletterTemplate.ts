@@ -1,4 +1,4 @@
-import { escapeHtml, safeFormatContent, sanitizeEmail, sanitizeCategories } from '../utils/security';
+import { escapeHtml, safeFormatContent, sanitizeHtmlContent, sanitizeEmail, sanitizeCategories } from '../utils/security';
 
 interface NewsletterTemplateData {
   title: string;
@@ -25,7 +25,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
 
   // Sanitize all input data to prevent XSS
   const safeTitle = escapeHtml(title);
-  const safeContent = safeFormatContent(content);
+  const safeContent = sanitizeHtmlContent(content); // Use HTML sanitizer for rich content
   const safeEmail = sanitizeEmail(subscriberEmail);
   const safeCompanyName = escapeHtml(companyName);
   const safeCompanyAddress = escapeHtml(companyAddress);

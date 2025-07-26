@@ -1,5 +1,5 @@
 
-import { escapeHtml, safeFormatContent } from '../utils/security';
+import { escapeHtml, sanitizeHtmlContent } from '../utils/security';
 
 interface NewsletterPageData {
   id: number;
@@ -25,7 +25,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
   // Sanitize all input data
   const safeTitle = escapeHtml(title);
   const safeSubject = escapeHtml(subject);
-  const safeContent = safeFormatContent(content);
+  const safeContent = sanitizeHtmlContent(content); // Use HTML sanitizer for rich content
   const safeCategories = categories.map(cat => escapeHtml(cat));
   
   // Generate excerpt from content if not provided
