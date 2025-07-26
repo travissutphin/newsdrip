@@ -295,7 +295,7 @@ export default function SubscriptionForm() {
             name="frequency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>How often would you like to receive updates?</FormLabel>
+                <FormLabel className="text-sm font-medium text-[#ffffff]">How often would you like to receive updates?</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
