@@ -294,6 +294,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...data,
         authorId: userId,
         status: action === 'send' ? 'sent' : 'draft',
+        sentAt: action === 'send' ? new Date() : undefined,
       });
 
       // Set categories
@@ -408,6 +409,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newsletter = await storage.updateNewsletter(id, {
         ...data,
         status: action === 'send' ? 'sent' : data.status,
+        sentAt: action === 'send' ? new Date() : data.sentAt,
       });
 
       // Update categories if provided
