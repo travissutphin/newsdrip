@@ -30,19 +30,16 @@ export function NewsDripLogo({ size = "md", className, showText = true }: NewsDr
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      {/* Lightning bolt logo */}
+      {/* NewsDrip logo */}
       <div className={cn(
-        "rounded-full bg-primary flex items-center justify-center shadow-lg",
+        "flex items-center justify-center",
         sizeClasses[size]
       )}>
-        <svg 
-          className={cn("text-white fill-current", iconSizeClasses[size])}
-          viewBox="0 0 24 24" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z" fill="currentColor"/>
-        </svg>
+        <img 
+          src="/attached_assets/ChatGPT Image Jul 26, 2025, 07_15_28 PM (2) (1)_1753572721611.png"
+          alt="NewsDrip Logo"
+          className={cn("object-contain", sizeClasses[size])}
+        />
       </div>
       
       {/* Brand text */}
@@ -62,13 +59,10 @@ export function NewsDripLogo({ size = "md", className, showText = true }: NewsDr
 
 export function LightningIcon({ className }: { className?: string }) {
   return (
-    <svg 
-      className={cn("fill-current", className)}
-      viewBox="0 0 24 24" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z" fill="currentColor"/>
-    </svg>
+    <img 
+      src="/attached_assets/ChatGPT Image Jul 26, 2025, 07_15_28 PM (2) (1)_1753572721611.png"
+      alt="NewsDrip Icon"
+      className={cn("object-contain", className)}
+    />
   );
 }

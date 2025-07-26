@@ -1,4 +1,3 @@
-
 import { escapeHtml, sanitizeHtmlContent } from '../utils/security';
 
 interface NewsletterPageData {
@@ -27,7 +26,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
   const safeSubject = escapeHtml(subject);
   const safeContent = sanitizeHtmlContent(content); // Use HTML sanitizer for rich content
   const safeCategories = categories.map(cat => escapeHtml(cat));
-  
+
   // Generate excerpt from content if not provided
   const safeExcerpt = excerpt 
     ? escapeHtml(excerpt)
@@ -55,14 +54,14 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${safeTitle} | NewsDrip Newsletter</title>
-    
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="${safeExcerpt}">
     <meta name="keywords" content="${safeCategories.join(', ')}, newsletter, news, updates">
     <meta name="author" content="NewsDrip">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="/newsletters/${slug}-${id}">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:title" content="${safeTitle}">
@@ -74,14 +73,14 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
     <meta property="article:author" content="NewsDrip">
     <meta property="article:section" content="Newsletter">
     ${safeCategories.map(cat => `<meta property="article:tag" content="${cat}">`).join('\n    ')}
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${safeTitle}">
     <meta name="twitter:description" content="${safeExcerpt}">
     <meta name="twitter:site" content="@newsdrip">
     <meta name="twitter:creator" content="@newsdrip">
-    
+
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -112,15 +111,15 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
       "keywords": "${safeCategories.join(', ')}"
     }
     </script>
-    
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" href="/favicon.png">
-    
+
     <style>
         /* Reset and base styles */
         * {
@@ -128,7 +127,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
@@ -136,7 +135,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             background-color: #334155;
             min-height: 100vh;
         }
-        
+
         /* Container */
         .container {
             max-width: 800px;
@@ -147,7 +146,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
         /* Header */
         .header {
             background: linear-gradient(135deg, #475569 0%, #334155 100%);
@@ -157,7 +156,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             position: relative;
             border-bottom: 2px solid #ef4444;
         }
-        
+
         .header::before {
             content: '';
             position: absolute;
@@ -168,45 +167,53 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(239,68,68,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
             opacity: 0.3;
         }
-        
+
         .header-content {
             position: relative;
             z-index: 2;
         }
-        
+
         .brand-logo {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
         }
-        
+
+        .brand-logo img {
+            width: 48px;
+            height: 48px;
+            margin-right: 16px;
+            vertical-align: middle;
+            object-fit: contain;
+        }
+
         .lightning-icon {
             width: 32px;
             height: 32px;
             margin-right: 12px;
         }
-        
+
         .brand-name {
             font-size: 2rem;
             font-weight: 800;
             letter-spacing: -1px;
         }
-        
+
         .tagline {
             font-size: 1rem;
             opacity: 0.9;
             font-weight: 500;
             margin-bottom: 1rem;
         }
-        
+
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
             margin: 1rem 0;
             line-height: 1.2;
         }
-        
+
         .meta {
             font-size: 1rem;
             opacity: 0.8;
@@ -216,7 +223,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             gap: 1rem;
             flex-wrap: wrap;
         }
-        
+
         /* Categories */
         .categories {
             display: flex;
@@ -225,7 +232,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             flex-wrap: wrap;
             margin-top: 1rem;
         }
-        
+
         .category-tag {
             background-color: #ef4444;
             color: #f8fafc;
@@ -237,13 +244,13 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             letter-spacing: 0.5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
+
         /* Content */
         .content {
             padding: 3rem 2rem;
             background-color: #475569;
         }
-        
+
         .content h1 {
             color: #ef4444;
             font-size: 2rem;
@@ -251,7 +258,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             margin: 2rem 0 1rem 0;
             line-height: 1.3;
         }
-        
+
         .content h2 {
             color: #ef4444;
             font-size: 1.75rem;
@@ -259,7 +266,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             margin: 2rem 0 1rem 0;
             line-height: 1.3;
         }
-        
+
         .content h3 {
             color: #f8fafc;
             font-size: 1.375rem;
@@ -267,44 +274,44 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             margin: 1.5rem 0 0.75rem 0;
             line-height: 1.4;
         }
-        
+
         .content h4, .content h5, .content h6 {
             color: #e2e8f0;
             font-weight: 600;
             margin: 1rem 0 0.5rem 0;
             line-height: 1.4;
         }
-        
+
         .content p {
             font-size: 1.125rem;
             line-height: 1.75;
             margin: 0 0 1.25rem 0;
             color: #e2e8f0;
         }
-        
+
         .content ul, .content ol {
             font-size: 1.125rem;
             line-height: 1.75;
             margin: 0 0 1.25rem 2rem;
             color: #e2e8f0;
         }
-        
+
         .content li {
             margin-bottom: 0.5rem;
         }
-        
+
         .content a {
             color: #ef4444;
             text-decoration: underline;
             font-weight: 500;
             transition: color 0.2s;
         }
-        
+
         .content a:hover {
             color: #dc2626;
             text-decoration: none;
         }
-        
+
         .content blockquote {
             border-left: 4px solid #ef4444;
             padding: 1.5rem;
@@ -314,24 +321,24 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             background-color: #334155;
             border-radius: 6px;
         }
-        
+
         .content strong, .content b {
             color: #f8fafc;
             font-weight: 700;
         }
-        
+
         .content em, .content i {
             color: #e2e8f0;
             font-style: italic;
         }
-        
+
         .content img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             margin: 1.5rem 0;
         }
-        
+
         /* Subscription CTA */
         .subscription-cta {
             background: linear-gradient(135deg, #334155 0%, #475569 100%);
@@ -342,20 +349,20 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             border: 2px solid #ef4444;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
-        
+
         .subscription-cta h3 {
             color: #f8fafc;
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0 0 0.5rem 0;
         }
-        
+
         .subscription-cta p {
             color: #e2e8f0;
             margin: 0 0 1.5rem 0;
             font-size: 1rem;
         }
-        
+
         .cta-button {
             display: inline-block;
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -368,14 +375,14 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             transition: all 0.2s;
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
         }
-        
+
         .cta-button:hover {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             color: white !important;
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
         }
-        
+
         /* Footer */
         .footer {
             background-color: #334155;
@@ -384,86 +391,86 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             text-align: center;
             border-top: 1px solid #64748b;
         }
-        
+
         .footer p {
             margin: 0.5rem 0;
             font-size: 0.875rem;
         }
-        
+
         .footer a {
             color: #ef4444;
             text-decoration: none;
             transition: color 0.2s;
         }
-        
+
         .footer a:hover {
             color: #f87171;
             text-decoration: underline;
         }
-        
+
         .footer a {
             color: #ef4444;
             text-decoration: none;
         }
-        
+
         .footer a:hover {
             text-decoration: underline;
         }
-        
+
         /* Responsive design */
         @media (max-width: 768px) {
             .header {
                 padding: 2rem 1rem;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .brand-name {
                 font-size: 1.5rem;
             }
-            
+
             .content {
                 padding: 2rem 1rem;
             }
-            
+
             .content h2 {
                 font-size: 1.5rem;
             }
-            
+
             .content p, .content ul, .content ol {
                 font-size: 1rem;
             }
-            
+
             .subscription-cta {
                 padding: 1.5rem;
                 margin: 2rem 0;
             }
         }
-        
+
         /* Accessibility improvements */
         @media (prefers-reduced-motion: reduce) {
             .cta-button {
                 transition: none;
             }
-            
+
             .cta-button:hover {
                 transform: none;
             }
         }
-        
+
         /* Print styles */
         @media print {
             .subscription-cta,
             .footer {
                 display: none;
             }
-            
+
             body {
                 background: white;
             }
-            
+
             .container {
                 box-shadow: none;
             }
@@ -475,15 +482,13 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         <header class="header">
             <div class="header-content">
                 <div class="brand-logo">
-                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
-                    </svg>
+                    <img src="/attached_assets/ChatGPT Image Jul 26, 2025, 07_15_28 PM (2) (1)_1753572721611.png" alt="NewsDrip Logo">
                     <div class="brand-name">NewsDrip</div>
                 </div>
                 <p class="tagline">The Gist. No Fluff.</p>
-                
+
                 <h1 itemprop="headline">${safeTitle}</h1>
-                
+
                 <div class="meta">
                     <time datetime="${isoDate}" itemprop="datePublished">Published on ${formattedDate}</time>
                     <span itemprop="author" itemscope itemtype="https://schema.org/Organization">
@@ -491,7 +496,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
                         by NewsDrip
                     </span>
                 </div>
-                
+
                 ${safeCategories.length > 0 ? `
                 <div class="categories" role="list" aria-label="Article categories">
                     ${safeCategories.map(category => `
@@ -501,19 +506,19 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
                 ` : ''}
             </div>
         </header>
-        
+
         <main class="content">
             <div itemprop="articleBody">
                 ${safeContent}
             </div>
-            
+
             <div class="subscription-cta" role="complementary" aria-labelledby="subscribe-heading">
                 <h3 id="subscribe-heading">Enjoyed this newsletter?</h3>
                 <p>Get the latest updates delivered directly to your inbox.</p>
                 <a href="/" class="cta-button" role="button">Subscribe Now</a>
             </div>
         </main>
-        
+
         <footer class="footer" role="contentinfo">
             <p>&copy; ${new Date().getFullYear()} NewsDrip. All rights reserved.</p>
             <p>
@@ -523,7 +528,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
                 <a href="/terms">Terms of Service</a>
             </p>
         </footer>
-        
+
         <!-- Hidden structured data -->
         <meta itemprop="description" content="${safeExcerpt}">
         <meta itemprop="dateModified" content="${isoDate}">
