@@ -6,6 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import NewsletterForm from "@/components/newsletter-form";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Edit, ExternalLink, Trash2 } from "lucide-react";
 
 export default function NewslettersView() {
   const [showForm, setShowForm] = useState(false);
@@ -222,41 +229,55 @@ export default function NewslettersView() {
                         : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(newsletter)}
-                        className="text-primary hover:text-primary/80 hover:bg-primary/10 mr-2"
-                      >
-                        Edit
-                      </Button>
-                      {newsletter.status === 'sent' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const slug = newsletter.title.toLowerCase()
-                              .replace(/[^a-z0-9\s-]/g, '')
-                              .replace(/\s+/g, '-')
-                              .replace(/-+/g, '-')
-                              .trim();
-                            window.open(`/newsletters/${slug}-${newsletter.id}.html`, '_blank');
-                          }}
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 mr-2"
-                        >
-                          <i className="fas fa-external-link-alt mr-1"></i>
-                          View
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(newsletter.id)}
-                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
-                        disabled={deleteMutation.isPending}
-                      >
-                        Delete
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:bg-muted"
+                            data-testid={`dropdown-newsletter-${newsletter.id}`}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[160px]">
+                          <DropdownMenuItem
+                            onClick={() => handleEdit(newsletter)}
+                            className="cursor-pointer"
+                            data-testid={`edit-newsletter-${newsletter.id}`}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          {newsletter.status === 'sent' && (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                const slug = newsletter.title.toLowerCase()
+                                  .replace(/[^a-z0-9\s-]/g, '')
+                                  .replace(/\s+/g, '-')
+                                  .replace(/-+/g, '-')
+                                  .trim();
+                                window.open(`/newsletters/${slug}-${newsletter.id}.html`, '_blank');
+                              }}
+                              className="cursor-pointer"
+                              data-testid={`view-newsletter-${newsletter.id}`}
+                            >
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              View
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(newsletter.id)}
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                            disabled={deleteMutation.isPending}
+                            data-testid={`delete-newsletter-${newsletter.id}`}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))
