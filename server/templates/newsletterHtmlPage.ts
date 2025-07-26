@@ -182,13 +182,9 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         }
         
         .lightning-icon {
-            width: 48px;
-            height: 48px;
+            width: 32px;
+            height: 32px;
             margin-right: 12px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            padding: 12px;
-            fill: white;
         }
         
         .brand-name {
@@ -479,7 +475,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         <header class="header">
             <div class="header-content">
                 <div class="brand-logo">
-                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
                     </svg>
                     <div class="brand-name">NewsDrip</div>

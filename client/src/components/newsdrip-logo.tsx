@@ -29,18 +29,33 @@ export function NewsDripLogo({ size = "md", className, showText = true }: NewsDr
   };
 
   return (
-    <div className={cn("flex items-center", className)}>
-      {/* NewsDrip logo image */}
-      <img 
-        src="/static/newsdrip-logo.png"
-        alt="NewsDrip - The Gist. No Fluff."
-        className={cn("h-auto object-contain max-h-12 sm:max-h-14 md:max-h-16", {
-          "w-16 sm:w-20": size === "sm",
-          "w-20 sm:w-24 md:w-28": size === "md", 
-          "w-24 sm:w-28 md:w-32": size === "lg",
-          "w-28 sm:w-32 md:w-36 lg:w-40": size === "xl"
-        })}
-      />
+    <div className={cn("flex items-center gap-3", className)}>
+      {/* Lightning bolt logo */}
+      <div className={cn(
+        "rounded-full bg-primary flex items-center justify-center shadow-lg",
+        sizeClasses[size]
+      )}>
+        <svg 
+          className={cn("text-white fill-current", iconSizeClasses[size])}
+          viewBox="0 0 24 24" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z" fill="currentColor"/>
+        </svg>
+      </div>
+      
+      {/* Brand text */}
+      {showText && (
+        <div className="flex flex-col">
+          <span className={cn("text-foreground tracking-tight", textSizeClasses[size])}>
+            NewsDrip
+          </span>
+          <span className="text-muted-foreground text-sm font-medium -mt-1">
+            The Gist. No Fluff.
+          </span>
+        </div>
+      )}
     </div>
   );
 }

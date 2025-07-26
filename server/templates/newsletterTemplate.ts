@@ -132,14 +132,10 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
         }
         .lightning-icon {
             display: inline-block;
-            width: 48px;
-            height: 48px;
+            width: 32px;
+            height: 32px;
             margin-right: 12px;
             vertical-align: middle;
-            background-color: #ef4444;
-            border-radius: 50%;
-            padding: 12px;
-            fill: white;
         }
         
         /* Sponsor Section */
@@ -439,7 +435,7 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             <!-- Brand Header -->
             <div class="brand-header">
                 <div class="brand-logo">
-                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="white">
+                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
                     </svg>
                     <h1>NewsDrip</h1>

@@ -68,14 +68,10 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
         }
         .lightning-icon {
             display: inline-block;
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
             margin-right: 8px;
             vertical-align: middle;
-            background-color: #ef4444;
-            border-radius: 50%;
-            padding: 8px;
-            fill: white;
         }
         .content {
             padding: 30px;
@@ -135,7 +131,7 @@ export function generateWelcomeEmail(data: WelcomeEmailData): { subject: string;
 <body>
     <div class="container">
         <div class="header">
-            <svg class="lightning-icon" viewBox="0 0 24 24" fill="white">
+            <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
             </svg>
             <h1>Welcome to NewsDrip!</h1>
