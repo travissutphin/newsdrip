@@ -37,12 +37,15 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
   const editorRef = useRef<HTMLDivElement>(null);
   const [activeView, setActiveView] = useState<"visual" | "html">("visual");
   const [htmlContent, setHtmlContent] = useState(value || "");
+  const [isInternalUpdate, setIsInternalUpdate] = useState(false);
 
+  // Only update editor content when value changes externally (not from internal edits)
   useEffect(() => {
-    if (editorRef.current && activeView === "visual") {
+    if (editorRef.current && activeView === "visual" && !isInternalUpdate) {
       editorRef.current.innerHTML = value || "";
     }
-  }, [value]);
+    setIsInternalUpdate(false);
+  }, [value, activeView]);
 
   const executeCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -53,6 +56,7 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
       setHtmlContent(content);
+      setIsInternalUpdate(true);
       onChange(content);
     }
   };
@@ -89,6 +93,7 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
   const handleHtmlChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     setHtmlContent(newContent);
+    setIsInternalUpdate(true);
     onChange(newContent);
     if (editorRef.current && activeView === "visual") {
       editorRef.current.innerHTML = newContent;
@@ -298,8 +303,30 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
             contentEditable
             className="min-h-[300px] p-4 bg-background text-foreground outline-none focus:ring-0"
             style={{ minHeight: '300px' }}
-            onInput={updateContent}
+            onInput={(e) => {
+              // Use setTimeout to debounce and avoid cursor jumping
+              setTimeout(() => updateContent(), 0);
+            }}
             onBlur={updateContent}
+            onKeyDown={(e) => {
+              // Handle common keyboard shortcuts
+              if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                  case 'b':
+                    e.preventDefault();
+                    executeCommand('bold');
+                    break;
+                  case 'i':
+                    e.preventDefault();
+                    executeCommand('italic');
+                    break;
+                  case 'u':
+                    e.preventDefault();
+                    executeCommand('underline');
+                    break;
+                }
+              }
+            }}
             data-placeholder={placeholder}
             suppressContentEditableWarning={true}
             data-testid="html-editor-visual"
