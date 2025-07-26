@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Bold, Italic, Link, List, AlignLeft } from "lucide-react";
 
 
 const newsletterSchema = z.object({
@@ -29,6 +31,7 @@ interface NewsletterFormProps {
 export default function NewsletterForm({ newsletter, onClose }: NewsletterFormProps) {
   const { toast } = useToast();
   const { user } = useAuth();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: categories } = useQuery<any[]>({
     queryKey: ["/api/categories"],
@@ -109,6 +112,42 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
     };
     saveMutation.mutate(payload);
   };
+
+  // Rich text formatting functions
+  const insertFormatting = (before: string, after: string = '') => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    const replacement = before + selectedText + after;
+    
+    const newValue = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+    
+    // Update form value
+    form.setValue('content', newValue);
+    
+    // Reset focus and cursor position
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + before.length + selectedText.length + after.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  const formatBold = () => insertFormatting('**', '**');
+  const formatItalic = () => insertFormatting('*', '*');
+  const formatLink = () => {
+    const url = prompt('Enter URL:');
+    if (url) {
+      const textarea = textareaRef.current;
+      const selectedText = textarea?.value.substring(textarea.selectionStart, textarea.selectionEnd) || 'link text';
+      insertFormatting(`[${selectedText}](`, `${url})`);
+    }
+  };
+  const insertParagraph = () => insertFormatting('\n\n');
+  const insertBulletList = () => insertFormatting('\n- ');
 
   return (
     <div className="bg-card rounded-lg shadow-sm border border-border p-6">
@@ -201,14 +240,101 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">Newsletter Content</FormLabel>
+                
+                {/* Formatting Toolbar */}
+                <div className="flex items-center gap-2 p-2 bg-muted/50 border border-border rounded-t-md">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={formatBold}
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    title="Bold (Ctrl+B)"
+                  >
+                    <Bold className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={formatItalic}
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    title="Italic (Ctrl+I)"
+                  >
+                    <Italic className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={formatLink}
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    title="Insert Link"
+                  >
+                    <Link className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={insertBulletList}
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    title="Bullet List"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={insertParagraph}
+                    className="h-8 w-8 p-0 hover:bg-muted"
+                    title="New Paragraph"
+                  >
+                    <AlignLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+
                 <FormControl>
                   <Textarea
-                    placeholder="Write your newsletter content here..."
+                    ref={textareaRef}
+                    placeholder="Write your newsletter content here...
+
+Use the toolbar above for formatting:
+• **bold text** for bold
+• *italic text* for italic  
+• [link text](https://example.com) for links
+• - item for bullet points
+
+Or use keyboard shortcuts: Ctrl+B for bold, Ctrl+I for italic"
                     rows={12}
-                    className="resize-none bg-background border-border text-foreground"
+                    className="resize-none bg-background border-border text-foreground rounded-t-none border-t-0"
                     {...field}
+                    onKeyDown={(e) => {
+                      if (e.ctrlKey || e.metaKey) {
+                        if (e.key === 'b') {
+                          e.preventDefault();
+                          formatBold();
+                        } else if (e.key === 'i') {
+                          e.preventDefault();
+                          formatItalic();
+                        }
+                      }
+                    }}
                   />
                 </FormControl>
+                
+                {/* Format Preview */}
+                <div className="mt-2 p-3 bg-muted/30 border border-border rounded-md">
+                  <p className="text-xs text-muted-foreground mb-2 font-medium">Preview formatting:</p>
+                  <div className="text-sm text-foreground">
+                    <p><strong>**Bold text**</strong> renders as <strong>bold text</strong></p>
+                    <p><em>*Italic text*</em> renders as <em>italic text</em></p>
+                    <p><span className="text-primary">[Link text](url)</span> creates clickable links</p>
+                    <p><span className="text-muted-foreground">- Bullet points</span> create lists</p>
+                  </div>
+                </div>
+                
                 <FormMessage />
               </FormItem>
             )}
