@@ -30,9 +30,9 @@ export function NewsDripLogo({ size = "md", className, showText = true }: NewsDr
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      {/* Lightning bolt logo */}
+      {/* NewsDrip logo with red circular background */}
       <div className={cn(
-        "rounded-full bg-primary flex items-center justify-center shadow-lg",
+        "rounded-full bg-red-500 flex items-center justify-center shadow-lg",
         sizeClasses[size]
       )}>
         <svg 
