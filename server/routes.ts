@@ -11,6 +11,11 @@ import { z } from "zod";
 import { nanoid } from "nanoid";
 import type { Request } from "express";
 
+// Rate limiting for subscription endpoint
+const subscriptionAttempts = new Map<string, { count: number; lastAttempt: number }>();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const MAX_ATTEMPTS = 3; // Max 3 attempts per IP per window
+
 function getBaseUrl(req: Request): string {
   // Check for Replit deployment domains
   if (process.env.REPLIT_DOMAINS) {
@@ -53,11 +58,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Public subscription endpoint
   app.post('/api/subscribe', async (req, res) => {
     try {
+      // Rate limiting check
+      const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+      const now = Date.now();
+      const attempts = subscriptionAttempts.get(clientIP);
+
+      if (attempts) {
+        // Clean up old attempts outside the window
+        if (now - attempts.lastAttempt > RATE_LIMIT_WINDOW) {
+          subscriptionAttempts.delete(clientIP);
+        } else if (attempts.count >= MAX_ATTEMPTS) {
+          return res.status(429).json({
+            message: "Too many subscription attempts. Please try again later."
+          });
+        }
+      }
+
+      // Track this attempt
+      const currentAttempts = attempts ? attempts.count + 1 : 1;
+      subscriptionAttempts.set(clientIP, {
+        count: currentAttempts,
+        lastAttempt: now
+      });
       const subscriptionData = insertSubscriberSchema.extend({
         categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
+        website: z.string().optional(), // Honeypot field
       }).parse(req.body);
 
+      // Honeypot validation - if filled, it's likely a bot
+      if (subscriptionData.website && subscriptionData.website.trim() !== '') {
+        console.log(`Honeypot triggered for IP: ${clientIP}`);
+        return res.status(400).json({
+          message: "Invalid submission detected."
+        });
+      }
+
       const { categoryIds, ...subscriberData } = subscriptionData;
+
+      // Enhanced email validation
+      if (subscriberData.email) {
+        // Import spam detection functions
+        const { isSpamEmail, hasValidDomain } = await import('./utils/security');
+        
+        // Check for spam patterns
+        if (isSpamEmail(subscriberData.email)) {
+          return res.status(400).json({
+            message: "Please provide a valid email address."
+          });
+        }
+
+        // Check for valid domain
+        if (!hasValidDomain(subscriberData.email)) {
+          return res.status(400).json({
+            message: "Please check your email address and try again."
+          });
+        }
+
+        // Check for disposable email domains
+        const disposableEmailDomains = [
+          '10minutemail.com', 'tempmail.org', 'guerrillamail.com', 
+          'mailinator.com', 'temp-mail.org', 'yopmail.com', 'getnada.com',
+          'throwaway.email', 'mohmal.com', 'sharklasers.com', 'guerrillamailblock.com'
+        ];
+        
+        const emailDomain = subscriberData.email.split('@')[1]?.toLowerCase();
+        if (disposableEmailDomains.includes(emailDomain)) {
+          return res.status(400).json({
+            message: "Disposable email addresses are not allowed."
+          });
+        }
+
+        // Check for existing subscriber with same email
+        const existingSubscribers = await storage.getSubscribers();
+        const existingSubscriber = existingSubscribers.find(s => 
+          s.email?.toLowerCase() === subscriberData.email?.toLowerCase()
+        );
+        
+        if (existingSubscriber) {
+          if (existingSubscriber.isActive) {
+            return res.status(400).json({
+              message: "This email is already subscribed to our newsletter."
+            });
+          } else {
+            // Reactivate existing subscriber instead of creating new one
+            await storage.updateSubscriber(existingSubscriber.id, { isActive: true });
+            await storage.setSubscriberCategories(existingSubscriber.id, categoryIds);
+            
+            return res.json({
+              message: "Welcome back! Your subscription has been reactivated.",
+              subscriber: existingSubscriber
+            });
+          }
+        }
+      }
 
       // Create subscriber with tokens
       const subscriberWithTokens = {

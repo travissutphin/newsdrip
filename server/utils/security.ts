@@ -171,3 +171,50 @@ export function getSafeErrorMessage(isDevelopment: boolean, error: any): string 
   
   return "An error occurred while processing your request.";
 }
+
+/**
+ * Detects potential spam patterns in email addresses
+ * @param email - Email address to check
+ * @returns boolean indicating if email looks suspicious
+ */
+export function isSpamEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') {
+    return true;
+  }
+
+  const suspiciousPatterns = [
+    /^[a-z0-9]{20,}@/, // Very long random-looking local part
+    /^\d+@/, // Numbers only before @
+    /test.*test/i, // Multiple "test" words
+    /admin.*admin/i, // Multiple "admin" words
+    /^(noreply|no-reply)@/i, // No-reply addresses
+    /\+.*\+/, // Multiple + signs
+    /^\w{1,2}@/, // Very short local part (1-2 chars)
+  ];
+
+  return suspiciousPatterns.some(pattern => pattern.test(email));
+}
+
+/**
+ * Validates if an email domain exists and is not suspicious
+ * @param email - Email address to validate
+ * @returns boolean indicating if domain is valid
+ */
+export function hasValidDomain(email: string): boolean {
+  if (!email || typeof email !== 'string') {
+    return false;
+  }
+
+  const domain = email.split('@')[1];
+  if (!domain) {
+    return false;
+  }
+
+  // Check for common typos in popular domains
+  const commonDomainTypos = [
+    'gmial.com', 'gmai.com', 'yahooo.com', 'hotmial.com',
+    'outlok.com', 'gmil.com', 'yaho.com'
+  ];
+
+  return !commonDomainTypos.includes(domain.toLowerCase());
+}

@@ -20,6 +20,7 @@ const subscriptionSchema = z.object({
   phone: z.string().min(10, "Please enter a valid phone number").optional(),
   frequency: z.enum(["daily", "weekly", "monthly"]),
   categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
+  website: z.string().optional(), // Honeypot field
 }).refine((data) => {
   if (data.contactMethod === "email" && !data.email) {
     return false;
@@ -60,6 +61,7 @@ export default function SubscriptionForm() {
       contactMethod: "email",
       frequency: "weekly",
       categoryIds: [],
+      website: "", // Honeypot field should remain empty
     },
   });
 
@@ -309,6 +311,26 @@ export default function SubscriptionForm() {
                   </SelectContent>
                 </Select>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Honeypot field - hidden from users but visible to bots */}
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormLabel>Website (leave blank)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Leave this field empty"
+                    {...field}
+                    autoComplete="off"
+                    tabIndex={-1}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
