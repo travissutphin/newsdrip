@@ -435,7 +435,9 @@ export function generateNewsletterHTML(data: NewsletterTemplateData): string {
             <!-- Brand Header -->
             <div class="brand-header">
                 <div class="brand-logo">
-                    <img class="lightning-icon" src="https://replituploads.com/attached_assets/ChatGPT%20Image%20Jul%2026,%202025,%2007_15_28%20PM%20(2)%20(1)_1753572721611.png" alt="NewsDrip Logo" style="width: 32px; height: 32px; object-fit: contain;">
+                    <svg class="lightning-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
+                    </svg>
                     <h1>NewsDrip</h1>
                     <p class="tagline">The Gist. No Fluff.</p>
                 </div>
