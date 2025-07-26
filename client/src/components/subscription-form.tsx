@@ -39,9 +39,10 @@ export default function SubscriptionForm() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { toast } = useToast();
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useQuery({
     queryKey: ["/api/categories"],
     retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Type for categories
@@ -66,8 +67,13 @@ export default function SubscriptionForm() {
 
   const subscribeMutation = useMutation({
     mutationFn: async (data: SubscriptionFormData) => {
-      const response = await apiRequest("POST", "/api/subscribe", data);
-      return await response.json();
+      try {
+        const response = await apiRequest("POST", "/api/subscribe", data);
+        return await response.json();
+      } catch (error) {
+        console.error("Subscription error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       setIsSubscribed(true);
@@ -77,6 +83,7 @@ export default function SubscriptionForm() {
       });
     },
     onError: (error) => {
+      console.error("Subscription mutation error:", error);
       toast({
         title: "Subscription failed",
         description: error instanceof Error ? error.message : "Please try again later.",
@@ -108,6 +115,42 @@ export default function SubscriptionForm() {
           >
             Subscribe Another Contact
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle loading and error states
+  if (categoriesLoading) {
+    return (
+      <div className="bg-card rounded-xl shadow-sm border border-border p-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
+            Stay Informed
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Loading subscription options...
+          </p>
+        </div>
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-muted rounded w-3/4"></div>
+          <div className="h-10 bg-muted rounded"></div>
+          <div className="h-4 bg-muted rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (categoriesError) {
+    return (
+      <div className="bg-card rounded-xl shadow-sm border border-border p-8">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-foreground mb-2">
+            Stay Informed
+          </h2>
+          <p className="text-destructive text-lg">
+            Unable to load subscription options. Please refresh the page.
+          </p>
         </div>
       </div>
     );
