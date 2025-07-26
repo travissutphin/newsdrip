@@ -132,26 +132,30 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #1f2937;
-            background-color: #f9fafb;
+            color: #f8fafc;
+            background-color: #334155;
+            min-height: 100vh;
         }
         
         /* Container */
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background-color: #475569;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             min-height: 100vh;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            color: #f8fafc;
             padding: 3rem 2rem;
             text-align: center;
             position: relative;
+            border-bottom: 2px solid #ef4444;
         }
         
         .header::before {
@@ -161,7 +165,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(239,68,68,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
             opacity: 0.3;
         }
         
@@ -223,23 +227,33 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         }
         
         .category-tag {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
+            background-color: #ef4444;
+            color: #f8fafc;
             padding: 0.375rem 0.75rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         /* Content */
         .content {
             padding: 3rem 2rem;
+            background-color: #475569;
+        }
+        
+        .content h1 {
+            color: #ef4444;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            line-height: 1.3;
         }
         
         .content h2 {
-            color: #1f2937;
+            color: #ef4444;
             font-size: 1.75rem;
             font-weight: 700;
             margin: 2rem 0 1rem 0;
@@ -247,10 +261,17 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         }
         
         .content h3 {
-            color: #374151;
+            color: #f8fafc;
             font-size: 1.375rem;
             font-weight: 600;
             margin: 1.5rem 0 0.75rem 0;
+            line-height: 1.4;
+        }
+        
+        .content h4, .content h5, .content h6 {
+            color: #e2e8f0;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
             line-height: 1.4;
         }
         
@@ -258,14 +279,14 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             font-size: 1.125rem;
             line-height: 1.75;
             margin: 0 0 1.25rem 0;
-            color: #4b5563;
+            color: #e2e8f0;
         }
         
         .content ul, .content ol {
             font-size: 1.125rem;
             line-height: 1.75;
             margin: 0 0 1.25rem 2rem;
-            color: #4b5563;
+            color: #e2e8f0;
         }
         
         .content li {
@@ -276,6 +297,7 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
             color: #ef4444;
             text-decoration: underline;
             font-weight: 500;
+            transition: color 0.2s;
         }
         
         .content a:hover {
@@ -285,10 +307,22 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         
         .content blockquote {
             border-left: 4px solid #ef4444;
-            padding-left: 1.5rem;
+            padding: 1.5rem;
             margin: 1.5rem 0;
             font-style: italic;
-            color: #6b7280;
+            color: #cbd5e1;
+            background-color: #334155;
+            border-radius: 6px;
+        }
+        
+        .content strong, .content b {
+            color: #f8fafc;
+            font-weight: 700;
+        }
+        
+        .content em, .content i {
+            color: #e2e8f0;
+            font-style: italic;
         }
         
         .content img {
@@ -300,23 +334,24 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         
         /* Subscription CTA */
         .subscription-cta {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
             border-radius: 12px;
             padding: 2rem;
             text-align: center;
             margin: 3rem 0;
-            border: 1px solid #d1d5db;
+            border: 2px solid #ef4444;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
         
         .subscription-cta h3 {
-            color: #1f2937;
+            color: #f8fafc;
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0 0 0.5rem 0;
         }
         
         .subscription-cta p {
-            color: #6b7280;
+            color: #e2e8f0;
             margin: 0 0 1.5rem 0;
             font-size: 1rem;
         }
@@ -342,15 +377,27 @@ export function generateNewsletterHtmlPage(data: NewsletterPageData): string {
         
         /* Footer */
         .footer {
-            background-color: #374151;
-            color: #d1d5db;
+            background-color: #334155;
+            color: #cbd5e1;
             padding: 2rem;
             text-align: center;
+            border-top: 1px solid #64748b;
         }
         
         .footer p {
             margin: 0.5rem 0;
             font-size: 0.875rem;
+        }
+        
+        .footer a {
+            color: #ef4444;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer a:hover {
+            color: #f87171;
+            text-decoration: underline;
         }
         
         .footer a {
