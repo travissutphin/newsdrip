@@ -276,7 +276,7 @@ export default function SubscriptionForm() {
                               }}
                             />
                           </FormControl>
-                          <FormLabel className="text-sm font-medium text-gray-700">
+                          <FormLabel className="text-sm font-medium text-[#ffffff]">
                             {category.name}
                           </FormLabel>
                         </FormItem>
