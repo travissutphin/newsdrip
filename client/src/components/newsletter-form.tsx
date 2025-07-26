@@ -120,34 +120,64 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
+    const currentValue = form.getValues('content') || '';
+    const selectedText = currentValue.substring(start, end);
     const replacement = before + selectedText + after;
     
-    const newValue = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+    const newValue = currentValue.substring(0, start) + replacement + currentValue.substring(end);
     
-    // Update form value
-    form.setValue('content', newValue);
+    // Update form value and trigger re-render
+    form.setValue('content', newValue, { shouldDirty: true, shouldTouch: true });
     
     // Reset focus and cursor position
     setTimeout(() => {
       textarea.focus();
       const newCursorPos = start + before.length + selectedText.length + after.length;
       textarea.setSelectionRange(newCursorPos, newCursorPos);
-    }, 0);
+    }, 10);
   };
 
-  const formatBold = () => insertFormatting('**', '**');
-  const formatItalic = () => insertFormatting('*', '*');
+  const formatBold = () => {
+    insertFormatting('**', '**');
+  };
+  
+  const formatItalic = () => {
+    insertFormatting('*', '*');
+  };
+  
   const formatLink = () => {
-    const url = prompt('Enter URL:');
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = form.getValues('content') || '';
+    const selectedText = currentValue.substring(start, end) || 'link text';
+    
+    const url = prompt('Enter URL:', 'https://');
     if (url) {
-      const textarea = textareaRef.current;
-      const selectedText = textarea?.value.substring(textarea.selectionStart, textarea.selectionEnd) || 'link text';
-      insertFormatting(`[${selectedText}](`, `${url})`);
+      const linkText = selectedText || 'link text';
+      insertFormatting(`[${linkText}](`, `${url})`);
     }
   };
-  const insertParagraph = () => insertFormatting('\n\n');
-  const insertBulletList = () => insertFormatting('\n- ');
+  
+  const insertParagraph = () => {
+    insertFormatting('\n\n');
+  };
+  
+  const insertBulletList = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const currentValue = form.getValues('content') || '';
+    
+    // Check if we're at the beginning of a line
+    const beforeCursor = currentValue.substring(0, start);
+    const needsNewline = beforeCursor && !beforeCursor.endsWith('\n');
+    
+    insertFormatting(needsNewline ? '\n- ' : '- ');
+  };
 
   return (
     <div className="bg-card rounded-lg shadow-sm border border-border p-6">
@@ -297,7 +327,6 @@ export default function NewsletterForm({ newsletter, onClose }: NewsletterFormPr
 
                 <FormControl>
                   <Textarea
-                    ref={textareaRef}
                     placeholder="Write your newsletter content here...
 
 Use the toolbar above for formatting:
@@ -306,10 +335,14 @@ Use the toolbar above for formatting:
 • [link text](https://example.com) for links
 • - item for bullet points
 
-Or use keyboard shortcuts: Ctrl+B for bold, Ctrl+I for italic"
+Or use keyboard shortcuts: Ctrl+B for bold, Ctrl+I for italic, Ctrl+K for links"
                     rows={12}
                     className="resize-none bg-background border-border text-foreground rounded-t-none border-t-0"
                     {...field}
+                    ref={(e) => {
+                      field.ref(e);
+                      textareaRef.current = e;
+                    }}
                     onKeyDown={(e) => {
                       if (e.ctrlKey || e.metaKey) {
                         if (e.key === 'b') {
@@ -318,9 +351,13 @@ Or use keyboard shortcuts: Ctrl+B for bold, Ctrl+I for italic"
                         } else if (e.key === 'i') {
                           e.preventDefault();
                           formatItalic();
+                        } else if (e.key === 'k') {
+                          e.preventDefault();
+                          formatLink();
                         }
                       }
                     }}
+                    data-testid="textarea-newsletter-content"
                   />
                 </FormControl>
                 
