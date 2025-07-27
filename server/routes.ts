@@ -17,6 +17,7 @@ import {
 } from './services/newsletterAutomation';
 import { aiContentRequestSchema } from './services/aiContentGenerator';
 import type { Request } from "express";
+import { backupService } from "./services/backupService";
 
 // Rate limiting for subscription endpoint
 const subscriptionAttempts = new Map<string, { count: number; lastAttempt: number }>();
@@ -30,13 +31,13 @@ function getBaseUrl(req: Request): string {
     const primaryDomain = domains[0];
     return `https://${primaryDomain}`;
   }
-  
+
   // Use request context if available
   if (req.get('host')) {
     const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
     return `${protocol}://${req.get('host')}`;
   }
-  
+
   // Fallback for development
   return process.env.NODE_ENV === 'production' 
     ? 'https://your-app.replit.app' 
@@ -46,7 +47,7 @@ function getBaseUrl(req: Request): string {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static newsletter HTML pages
   app.use('/newsletters', express.static('static/newsletters'));
-  
+
   // Auth middleware
   await setupAuth(app);
 
@@ -128,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (subscriberData.email) {
         // Import spam detection functions
         const { isSpamEmail, hasValidDomain } = await import('./utils/security');
-        
+
         // Check for spam patterns
         if (isSpamEmail(subscriberData.email)) {
           return res.status(400).json({
@@ -149,7 +150,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'mailinator.com', 'temp-mail.org', 'yopmail.com', 'getnada.com',
           'throwaway.email', 'mohmal.com', 'sharklasers.com', 'guerrillamailblock.com'
         ];
-        
+
         const emailDomain = subscriberData.email.split('@')[1]?.toLowerCase();
         if (disposableEmailDomains.includes(emailDomain)) {
           return res.status(400).json({
@@ -162,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const existingSubscriber = existingSubscribers.find(s => 
           s.email?.toLowerCase() === subscriberData.email?.toLowerCase()
         );
-        
+
         if (existingSubscriber) {
           if (existingSubscriber.isActive) {
             return res.status(400).json({
@@ -172,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Reactivate existing subscriber instead of creating new one
             await storage.updateSubscriber(existingSubscriber.id, { isActive: true });
             await storage.setSubscriberCategories(existingSubscriber.id, categoryIds);
-            
+
             return res.json({
               message: "Welcome back! Your subscription has been reactivated.",
               subscriber: existingSubscriber
@@ -187,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unsubscribeToken: nanoid(32),
         preferencesToken: nanoid(32),
       };
-      
+
       const subscriber = await storage.createSubscriber(subscriberWithTokens);
 
       // Set categories
@@ -195,7 +196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get categories for email
       const categories = await storage.getCategoriesByIds(categoryIds);
-      
+
       // Send welcome email with preference management links
       try {
         const baseUrl = getBaseUrl(req);
@@ -235,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/preferences/:token', async (req, res) => {
     try {
       const { token } = req.params;
-      
+
       const subscriber = await storage.getSubscriberByPreferencesToken(token);
       if (!subscriber) {
         return res.status(404).json({ message: "Invalid or expired preferences link" });
@@ -243,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get subscriber's categories
       const categories = await storage.getSubscriberCategories(subscriber.id);
-      
+
       res.json({
         ...subscriber,
         categories: categories,
@@ -257,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/preferences/:token', async (req, res) => {
     try {
       const { token } = req.params;
-      
+
       const updateSchema = z.object({
         email: z.string().email().optional(),
         phone: z.string().optional(),
@@ -276,7 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const updateData = updateSchema.parse(req.body);
-      
+
       const subscriber = await storage.getSubscriberByPreferencesToken(token);
       if (!subscriber) {
         return res.status(404).json({ message: "Invalid or expired preferences link" });
@@ -284,13 +285,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update subscriber
       const updatedSubscriber = await storage.updateSubscriber(subscriber.id, updateData);
-      
+
       // Update categories
       await storage.setSubscriberCategories(subscriber.id, updateData.categoryIds);
-      
+
       // Get updated categories for email
       const categories = await storage.getCategoriesByIds(updateData.categoryIds);
-      
+
       // Send confirmation email
       if (updateData.isActive && updateData.email) {
         try {
@@ -323,7 +324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/unsubscribe/:token', async (req, res) => {
     try {
       const { token } = req.params;
-      
+
       const subscriber = await storage.getSubscriberByUnsubscribeToken(token);
       if (!subscriber) {
         return res.status(404).json({ message: "Invalid or expired unsubscribe link" });
@@ -332,7 +333,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Deactivate subscriber and remove all category associations
       await storage.updateSubscriber(subscriber.id, { isActive: false });
       await storage.setSubscriberCategories(subscriber.id, []); // Remove all categories
-      
+
       // Get updated subscriber data to return
       const updatedSubscriber = await storage.getSubscriber(subscriber.id);
 
@@ -370,18 +371,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/newsletters', isAuthenticated, async (req, res) => {
     try {
       const newsletters = await storage.getNewsletters();
-      
+
       // Get categories and delivery stats for each newsletter
       const newslettersWithDetails = await Promise.all(
         newsletters.map(async (newsletter) => {
           const categories = await storage.getNewsletterCategories(newsletter.id);
-          
+
           // Get delivery stats if newsletter was sent
           let deliveryStats = null;
           if (newsletter.status === 'sent') {
             const deliveries = await storage.getDeliveries();
             const newsletterDeliveries = deliveries.filter(d => d.newsletterId === newsletter.id);
-            
+
             deliveryStats = {
               total: newsletterDeliveries.length,
               sent: newsletterDeliveries.filter(d => d.status === 'sent').length,
@@ -389,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               pending: newsletterDeliveries.filter(d => d.status === 'pending').length,
             };
           }
-          
+
           return { ...newsletter, categories, deliveryStats };
         })
       );
@@ -443,7 +444,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (action === 'send') {
         try {
           const subscribers = await storage.getSubscribersByCategories(categoryIds);
-          
+
           const deliveryPromises = subscribers.map(async (subscriber) => {
             const delivery = await storage.createDelivery({
               newsletterId: newsletter.id,
@@ -457,7 +458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 // Get category names for this newsletter
                 const newsletterCategories = await storage.getNewsletterCategories(newsletter.id);
                 const categoryNames = newsletterCategories.map(c => c.name);
-                
+
                 const emailSent = await sendNewsletterEmail({
                   to: subscriber.email,
                   subject: newsletter.subject || newsletter.title,
@@ -468,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   preferencesToken: subscriber.preferencesToken || '',
                   newsletterId: newsletter.id,
                 });
-                
+
                 if (emailSent) {
                   await storage.updateDeliveryStatus(delivery.id, 'sent');
                 } else {
@@ -487,7 +488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
 
           await Promise.all(deliveryPromises);
-          
+
           // Get final delivery stats for response
           const deliveries = await storage.getDeliveries();
           const newsletterDeliveries = deliveries.filter(d => d.newsletterId === newsletter.id);
@@ -497,7 +498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             failed: newsletterDeliveries.filter(d => d.status === 'failed').length,
             pending: newsletterDeliveries.filter(d => d.status === 'pending').length,
           };
-          
+
           res.json({ 
             message: `Newsletter sent to ${deliveryStats.total} subscribers! (${deliveryStats.sent} delivered, ${deliveryStats.pending} pending, ${deliveryStats.failed} failed)`,
             newsletter,
@@ -548,7 +549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const categories = categoryIds 
               ? await storage.getCategoriesByIds(categoryIds)
               : await storage.getNewsletterCategories(id);
-            
+
             await updateNewsletterHtmlPage({
               id: fullNewsletter.id,
               title: fullNewsletter.title,
@@ -576,12 +577,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/admin/newsletters/:id', isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      
+
       // Get newsletter data before deletion for HTML page cleanup
       const newsletter = await storage.getNewsletter(id);
-      
+
       await storage.deleteNewsletter(id);
-      
+
       // Clean up HTML page
       if (newsletter) {
         try {
@@ -591,7 +592,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue with deletion even if HTML cleanup fails
         }
       }
-      
+
       res.json({ message: 'Newsletter deleted!' });
     } catch (error) {
       console.error("Newsletter deletion error:", error);
@@ -603,21 +604,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/newsletters/generate', isAuthenticated, async (req: any, res) => {
     try {
       const aiRequest = aiContentRequestSchema.parse(req.body);
-      
+
       const config: AutomationConfig = {
         enabled: true,
         aiConfig: aiRequest,
         categories: req.body.categoryIds,
       };
-      
+
       const result = await createAutomatedNewsletter(storage, config);
-      
+
       if (!result.success) {
         return res.status(500).json({ 
           message: result.error || 'Failed to generate newsletter' 
         });
       }
-      
+
       res.json({
         message: 'Newsletter generated successfully!',
         newsletterId: result.newsletterId,
@@ -637,9 +638,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         template: req.body.template,
         aiConfig: req.body.aiConfig,
       };
-      
+
       const preview = await previewAutomatedNewsletter(config);
-      
+
       res.json(preview);
     } catch (error) {
       console.error("Newsletter preview error:", error);
@@ -663,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/subscribers', isAuthenticated, async (req, res) => {
     try {
       const subscribers = await storage.getSubscribers();
-      
+
       // Get categories for each subscriber
       const subscribersWithCategories = await Promise.all(
         subscribers.map(async (subscriber) => {
@@ -750,7 +751,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Find subscriber by token
       const subscribers = await storage.getSubscribers();
       const subscriber = subscribers.find(s => s.unsubscribeToken === token);
-      
+
       if (!subscriber) {
         return res.status(404).send(`
           <html>
@@ -804,18 +805,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/newsletters/archive', async (req, res) => {
     try {
       const newsletters = await storage.getPublishedNewsletters();
-      
+
       const newslettersWithDetails = await Promise.all(
         newsletters.map(async (newsletter) => {
           const categories = await storage.getNewsletterCategories(newsletter.id);
-          
+
           // Generate slug for URL
           const slug = newsletter.title.toLowerCase()
             .replace(/[^a-z0-9\s-]/g, '')
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-')
             .trim();
-          
+
           return {
             id: newsletter.id,
             title: newsletter.title,
@@ -853,7 +854,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Find subscriber by token
       const subscribers = await storage.getSubscribers();
       const subscriber = subscribers.find(s => s.preferencesToken === token);
-      
+
       if (!subscriber) {
         return res.status(404).send(`
           <html>
@@ -876,7 +877,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <head>
             <title>Newsletter Preferences</title>
             <style>
-              body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+              body { font-family: Arial, sans-serif```text
+, max-width: 600px; margin: 50px auto; padding: 20px; }
               .form-group { margin: 20px 0; }
               label { display: block; margin: 10px 0 5px 0; font-weight: bold; }
               input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px; }
@@ -895,10 +897,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               <strong>Contact Method:</strong> ${escapeHtml(subscriber.contactMethod)}<br>
               <strong>Status:</strong> ${subscriber.isActive ? 'Active' : 'Inactive'}
             </div>
-            
+
             <form method="POST" action="/api/preferences">
               <input type="hidden" name="token" value="${token}">
-              
+
               <div class="form-group">
                 <label for="frequency">Delivery Frequency:</label>
                 <select name="frequency" id="frequency">
@@ -950,7 +952,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/preferences', async (req, res) => {
     try {
       const { token, frequency, categories } = req.body;
-      
+
       if (!token) {
         return res.status(400).send('Invalid token');
       }
@@ -958,7 +960,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Find subscriber by token
       const subscribers = await storage.getSubscribers();
       const subscriber = subscribers.find(s => s.preferencesToken === token);
-      
+
       if (!subscriber) {
         return res.status(404).send('Subscriber not found');
       }
@@ -970,13 +972,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const categoryIds = Array.isArray(categories) 
         ? categories.map(id => parseInt(id)) 
         : categories ? [parseInt(categories)] : [];
-      
+
       await storage.setSubscriberCategories(subscriber.id, categoryIds);
 
       res.redirect(`/api/preferences?token=${token}&updated=1`);
     } catch (error) {
       console.error("Update preferences error:", error);
       res.status(500).send('Error updating preferences');
+    }
+  });
+
+  // Backup endpoints
+  app.post("/api/admin/backup", isAuthenticated, async (req, res) => {
+    try {
+      const backupPath = await backupService.createBackup();
+      res.json({ success: true, backupPath });
+    } catch (error) {
+      console.error("Backup creation failed:", error);
+      res.status(500).json({ error: "Backup creation failed" });
+    }
+  });
+
+  app.get("/api/admin/backups", isAuthenticated, async (req, res) => {
+    try {
+      const backups = await backupService.listBackups();
+      res.json(backups);
+    } catch (error) {
+      console.error("Failed to list backups:", error);
+      res.status(500).json({ error: "Failed to list backups" });
+    }
+  });
+
+  // Analytics endpoint
+  app.get('/api/admin/dashboard', isAuthenticated, async (req, res) => {
+    try {
+      const [subscriberStats, newsletterStats, deliveryStats] = await Promise.all([
+        storage.getSubscriberStats(),
+        storage.getNewsletterStats(),
+        storage.getDeliveryStats(),
+      ]);
+
+      res.json({
+        subscriberStats,
+        newsletterStats,
+        deliveryStats,
+      });
+    } catch (error) {
+      console.error("Dashboard error:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard data" });
     }
   });
 
