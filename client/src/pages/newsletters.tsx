@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import NewsletterForm from "@/components/newsletter-form";
-import AINewsletterGenerator from "@/components/ai-newsletter-generator";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import {
   DropdownMenu,
@@ -13,13 +12,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Edit, ExternalLink, Trash2, Sparkles } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MoreHorizontal, Edit, ExternalLink, Trash2 } from "lucide-react";
 
 export default function NewslettersView() {
   const [showForm, setShowForm] = useState(false);
   const [editingNewsletter, setEditingNewsletter] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<"manual" | "ai">("manual");
   const { toast } = useToast();
 
   const { data: newsletters, isLoading } = useQuery<any[]>({
@@ -114,33 +111,10 @@ export default function NewslettersView() {
       </div>
 
       {showForm && (
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="manual">Manual Creation</TabsTrigger>
-            <TabsTrigger value="ai" className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              AI Generator
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="manual">
-            <NewsletterForm
-              newsletter={editingNewsletter}
-              onClose={handleFormClose}
-            />
-          </TabsContent>
-          <TabsContent value="ai">
-            <AINewsletterGenerator 
-              onNewsletterCreated={(newsletterId) => {
-                handleFormClose();
-                queryClient.invalidateQueries({ queryKey: ["/api/admin/newsletters"] });
-                toast({
-                  title: "Success",
-                  description: "AI-generated newsletter created successfully!",
-                });
-              }}
-            />
-          </TabsContent>
-        </Tabs>
+        <NewsletterForm
+          newsletter={editingNewsletter}
+          onClose={handleFormClose}
+        />
       )}
 
       {/* Email Delivery Info Panel */}

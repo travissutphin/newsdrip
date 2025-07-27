@@ -9,13 +9,6 @@ import { createNewsletterHtmlPage, deleteNewsletterHtmlPage, updateNewsletterHtm
 import { escapeHtml, getSafeErrorMessage } from "./utils/security";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { 
-  createAutomatedNewsletter, 
-  previewAutomatedNewsletter,
-  getAvailableTemplates,
-  AutomationConfig 
-} from './services/newsletterAutomation';
-import { aiContentRequestSchema } from './services/aiContentGenerator';
 import type { Request } from "express";
 
 // Rate limiting for subscription endpoint
@@ -596,66 +589,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Newsletter deletion error:", error);
       res.status(500).json({ message: "Failed to delete newsletter" });
-    }
-  });
-
-  // Newsletter automation routes
-  app.post('/api/admin/newsletters/generate', isAuthenticated, async (req: any, res) => {
-    try {
-      const aiRequest = aiContentRequestSchema.parse(req.body);
-      
-      const config: AutomationConfig = {
-        enabled: true,
-        aiConfig: aiRequest,
-        categories: req.body.categoryIds,
-      };
-      
-      const result = await createAutomatedNewsletter(storage, config);
-      
-      if (!result.success) {
-        return res.status(500).json({ 
-          message: result.error || 'Failed to generate newsletter' 
-        });
-      }
-      
-      res.json({
-        message: 'Newsletter generated successfully!',
-        newsletterId: result.newsletterId,
-        generatedContent: result.generatedContent,
-      });
-    } catch (error) {
-      console.error("Newsletter generation error:", error);
-      res.status(400).json({ 
-        message: error instanceof Error ? error.message : "Failed to generate newsletter" 
-      });
-    }
-  });
-
-  app.post('/api/admin/newsletters/preview', isAuthenticated, async (req: any, res) => {
-    try {
-      const config: Partial<AutomationConfig> = {
-        template: req.body.template,
-        aiConfig: req.body.aiConfig,
-      };
-      
-      const preview = await previewAutomatedNewsletter(config);
-      
-      res.json(preview);
-    } catch (error) {
-      console.error("Newsletter preview error:", error);
-      res.status(400).json({ 
-        message: error instanceof Error ? error.message : "Failed to preview newsletter" 
-      });
-    }
-  });
-
-  app.get('/api/admin/newsletters/templates', isAuthenticated, async (req, res) => {
-    try {
-      const templates = getAvailableTemplates();
-      res.json(templates);
-    } catch (error) {
-      console.error("Error fetching templates:", error);
-      res.status(500).json({ message: "Failed to fetch templates" });
     }
   });
 
