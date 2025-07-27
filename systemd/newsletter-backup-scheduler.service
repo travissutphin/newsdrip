@@ -1,0 +1,34 @@
+[Unit]
+Description=NewsletterPro Database Backup Scheduler
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/newsletter-app
+ExecStart=/usr/bin/node scripts/backup-scheduler.js start
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=newsletter-backup
+
+# Environment variables
+Environment=NODE_ENV=production
+Environment=DATABASE_URL=your-database-url
+Environment=BACKUP_DIR=/var/backups/newsletter
+Environment=BACKUP_RETENTION_DAYS=30
+Environment=TZ=America/New_York
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/backups/newsletter
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
