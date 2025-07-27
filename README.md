@@ -2,6 +2,16 @@
 
 > **The Gist. No Fluff.** - A modern newsletter management platform that delivers personalized content experiences with cutting-edge design and user-centric preferences.
 
+## 🏷️ Current Version
+**v2.1.0** - *Released July 27, 2025*
+
+### Latest Updates
+- ✅ **Enhanced Security**: Comprehensive XSS prevention and input validation
+- ✅ **Advanced Spam Protection**: Multi-layered bot detection and rate limiting  
+- ✅ **Rich Text Editor**: Professional HTML editor with security safeguards
+- ✅ **Newsletter View Fix**: Proper "View Online" links in email templates
+- ✅ **Production Ready**: Enhanced security audit compliance
+
 ![NewsDrip Logo](https://img.shields.io/badge/NewsDrip-Newsletter%20Management-ef4444?style=for-the-badge&logo=lightning&logoColor=white)
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-ef4444?style=for-the-badge)](https://your-replit-url.replit.app)
@@ -20,11 +30,14 @@
 - **Admin Dashboard** - Complete management interface for newsletters and subscribers
 
 ### 🚀 **Advanced Features**
+- **Rich Text Newsletter Editor** - Professional HTML editor with formatting toolbar and security validation
+- **Comprehensive Spam Prevention** - Multi-layered bot detection with honeypot fields, timing validation, and email pattern analysis
 - **Dynamic Token-Based Authentication** - Secure unsubscribe and preference management
 - **Multi-Domain Support** - Dynamic URL generation for deployed environments
-- **Rate Limiting** - API protection with tiered rate limits (100/15min general, 10/15min sensitive)
+- **Advanced Rate Limiting** - IP-based tracking with smart request throttling (3 attempts/15min for subscriptions)
+- **Disposable Email Protection** - Automatic blocking of temporary email services
 - **Security Headers** - Complete CSP, HSTS, and security header implementation
-- **Input Sanitization** - Comprehensive XSS prevention and data validation
+- **Input Sanitization** - Comprehensive XSS prevention with DOMPurify and validation
 - **Mobile-First Design** - Responsive interface optimized for all devices
 
 ## 🏗️ Technology Stack
