@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { Button } from "@/components/ui/button";
 import { 
   Bold, 
@@ -39,10 +40,20 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
   const [htmlContent, setHtmlContent] = useState(value || "");
   const [isInternalUpdate, setIsInternalUpdate] = useState(false);
 
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizeHtml = (html: string): string => {
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre'],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target'],
+      ALLOW_DATA_ATTR: false
+    });
+  };
+
   // Only update editor content when value changes externally (not from internal edits)
   useEffect(() => {
     if (editorRef.current && activeView === "visual" && !isInternalUpdate) {
-      editorRef.current.innerHTML = value || "";
+      const sanitizedContent = sanitizeHtml(value || "");
+      editorRef.current.innerHTML = sanitizedContent;
     }
     setIsInternalUpdate(false);
   }, [value, activeView]);
@@ -96,7 +107,8 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
     setIsInternalUpdate(true);
     onChange(newContent);
     if (editorRef.current && activeView === "visual") {
-      editorRef.current.innerHTML = newContent;
+      const sanitizedContent = sanitizeHtml(newContent);
+      editorRef.current.innerHTML = sanitizedContent;
     }
   };
 
