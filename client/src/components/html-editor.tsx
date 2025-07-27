@@ -75,14 +75,26 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
   const insertLink = () => {
     const url = prompt("Enter URL:");
     if (url) {
-      executeCommand("createLink", url);
+      // Basic URL validation to prevent javascript: and data: URLs
+      const sanitizedUrl = url.trim();
+      if (sanitizedUrl.match(/^https?:\/\//i) || sanitizedUrl.startsWith('/') || sanitizedUrl.startsWith('#')) {
+        executeCommand("createLink", sanitizedUrl);
+      } else {
+        alert("Please enter a valid HTTP/HTTPS URL");
+      }
     }
   };
 
   const insertImage = () => {
     const url = prompt("Enter image URL:");
     if (url) {
-      executeCommand("insertImage", url);
+      // Basic URL validation to prevent javascript: and data: URLs
+      const sanitizedUrl = url.trim();
+      if (sanitizedUrl.match(/^https?:\/\//i) || sanitizedUrl.startsWith('/')) {
+        executeCommand("insertImage", sanitizedUrl);
+      } else {
+        alert("Please enter a valid HTTP/HTTPS image URL");
+      }
     }
   };
 
@@ -97,7 +109,13 @@ export default function HtmlEditor({ value, onChange, placeholder }: HtmlEditorP
   const changeTextColor = () => {
     const color = prompt("Enter color (hex or name):");
     if (color) {
-      executeCommand("foreColor", color);
+      // Basic color validation to prevent script injection
+      const sanitizedColor = color.trim();
+      if (sanitizedColor.match(/^#[0-9a-fA-F]{3,6}$/) || sanitizedColor.match(/^[a-zA-Z]+$/)) {
+        executeCommand("foreColor", sanitizedColor);
+      } else {
+        alert("Please enter a valid color (hex like #ff0000 or name like red)");
+      }
     }
   };
 
