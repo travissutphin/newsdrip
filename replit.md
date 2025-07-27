@@ -48,6 +48,25 @@ Preferred communication style: Simple, everyday language.
 - Maintained NewsDrip theme consistency throughout the editor interface
 - Preserved all existing newsletter functionality while adding rich content creation capabilities
 
+## Recent Changes (July 27, 2025)
+
+✓ **Newsletter Email "View Online" Fix**
+- Fixed "View Online" link in newsletter emails to point to actual HTML newsletter pages
+- Updated newsletter email template interface to accept viewOnlineUrl parameter
+- Modified email service to generate correct URLs using newsletter slug and ID routing
+- Newsletter emails now properly link to individual HTML pages instead of preferences
+
+✓ **Comprehensive Spam Prevention System**
+- Implemented multi-layered bot detection with dual honeypot fields (hidden website field and reverse psychology checkbox)
+- Added timing validation to detect suspiciously fast or slow form submissions (< 3 seconds or > 30 minutes)
+- Enhanced email validation with spam pattern detection for suspicious email formats
+- Added disposable email domain blacklisting (10minutemail, tempmail, guerrillamail, etc.)
+- Implemented domain legitimacy validation checking for suspicious TLDs and patterns
+- Enhanced rate limiting system with IP-based tracking (max 3 attempts per 15 minutes)
+- Added comprehensive error handling with production-safe error messages to prevent information leakage
+- Created robust security utility functions for email validation, timing analysis, and content sanitization
+- Integrated all spam prevention measures seamlessly with existing subscription workflow
+
 ## System Architecture
 
 ### Frontend Architecture

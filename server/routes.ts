@@ -83,17 +83,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const subscriptionData = insertSubscriberSchema.extend({
         categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
         website: z.string().optional(), // Honeypot field
+        confirmSubscription: z.boolean().optional(), // Additional honeypot
+        timestamp: z.number().optional(), // Timing validation
+        submissionTime: z.number().optional(), // Time taken to submit
       }).parse(req.body);
 
-      // Honeypot validation - if filled, it's likely a bot
+      // Enhanced honeypot validation
       if (subscriptionData.website && subscriptionData.website.trim() !== '') {
-        console.log(`Honeypot triggered for IP: ${clientIP}`);
+        console.log(`Primary honeypot triggered for IP: ${clientIP}`);
         return res.status(400).json({
           message: "Invalid submission detected."
         });
       }
 
-      const { categoryIds, ...subscriberData } = subscriptionData;
+      // Additional honeypot validation  
+      if (subscriptionData.confirmSubscription === true) {
+        console.log(`Secondary honeypot triggered for IP: ${clientIP}`);
+        return res.status(400).json({
+          message: "Invalid submission detected."
+        });
+      }
+
+      // Timing validation to detect bots
+      if (subscriptionData.submissionTime) {
+        const { isSuspiciousTiming } = await import('./utils/security');
+        if (isSuspiciousTiming(subscriptionData.submissionTime)) {
+          console.log(`Suspicious timing detected for IP: ${clientIP}, time: ${subscriptionData.submissionTime}ms`);
+          return res.status(400).json({
+            message: "Please take your time filling out the form."
+          });
+        }
+      }
+
+      const { categoryIds, website, confirmSubscription, timestamp, submissionTime, ...subscriberData } = subscriptionData;
 
       // Enhanced email validation
       if (subscriberData.email) {

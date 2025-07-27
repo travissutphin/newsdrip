@@ -129,17 +129,100 @@ export function sanitizeEmail(email: string): string {
 }
 
 /**
- * Sanitizes phone numbers for display
- * @param phone - The phone number to sanitize
- * @returns Sanitized phone number
+ * Checks if an email address shows spam patterns
+ * @param email - The email address to check
+ * @returns True if email appears to be spam
  */
-export function sanitizePhone(phone: string): string {
-  if (!phone || typeof phone !== 'string') {
-    return '';
+export function isSpamEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') {
+    return true;
   }
   
-  // Remove any HTML and limit to reasonable phone number characters
-  return escapeHtml(phone.replace(/[^0-9+\-\s()]/g, ''));
+  const spamPatterns = [
+    // Too many numbers in username
+    /^[^@]*\d{4,}[^@]*@/,
+    // Random characters pattern
+    /^[a-z]{1,3}\d+[a-z]{1,3}\d+@/,
+    // Suspicious patterns
+    /^(test|spam|fake|temp|noreply|admin)\d*@/i,
+    // Too short usernames with numbers
+    /^[a-z]{1,2}\d+@/,
+    // Repetitive patterns
+    /(.)\1{3,}/,
+    // Common bot patterns
+    /(bot|crawler|spider|scraper)@/i,
+  ];
+  
+  return spamPatterns.some(pattern => pattern.test(email));
+}
+
+/**
+ * Validates email domain legitimacy
+ * @param email - The email address to validate
+ * @returns True if domain appears legitimate
+ */
+export function hasValidDomain(email: string): boolean {
+  if (!email || typeof email !== 'string') {
+    return false;
+  }
+  
+  const parts = email.split('@');
+  if (parts.length !== 2) {
+    return false;
+  }
+  
+  const domain = parts[1].toLowerCase();
+  
+  // Known suspicious domain patterns
+  const suspiciousDomains = [
+    // Very short domains
+    /^.{1,3}\./,
+    // Too many hyphens
+    /-{2,}/,
+    // Weird TLDs
+    /\.(tk|ml|ga|cf)$/,
+    // Number-heavy domains
+    /\d{3,}/,
+  ];
+  
+  return !suspiciousDomains.some(pattern => pattern.test(domain));
+}
+
+/**
+ * Checks if submission timing suggests bot behavior
+ * @param submissionTime - Time taken to submit form in milliseconds
+ * @returns True if timing is suspicious
+ */
+export function isSuspiciousTiming(submissionTime: number): boolean {
+  // Too fast (less than 3 seconds) or unreasonably slow (more than 30 minutes)
+  return submissionTime < 3000 || submissionTime > 1800000;
+}
+
+/**
+ * Gets a more comprehensive error message for production
+ * @param error - The error to sanitize
+ * @returns Safe error message
+ */
+export function getSafeErrorMessage(error: unknown): string {
+  if (process.env.NODE_ENV === 'development') {
+    return error instanceof Error ? error.message : String(error);
+  }
+  
+  // In production, return generic messages to avoid information leakage
+  if (error instanceof Error) {
+    // Map specific error types to user-friendly messages
+    if (error.message.includes('duplicate') || error.message.includes('unique')) {
+      return 'This information is already registered.';
+    }
+    if (error.message.includes('rate limit') || error.message.includes('too many')) {
+      return 'Please try again later.';
+    }
+    if (error.message.includes('validation') || error.message.includes('invalid')) {
+      return 'Please check your information and try again.';
+    }
+  }
+  
+  return 'An error occurred. Please try again.';
 }
 
 /**
@@ -156,65 +239,4 @@ export function sanitizeCategories(categories: string[]): string[] {
     .filter(cat => cat && typeof cat === 'string')
     .map(cat => escapeHtml(cat.trim()))
     .filter(cat => cat.length > 0);
-}
-
-/**
- * Generic error message for production use
- * @param isDevelopment - Whether in development mode
- * @param error - The original error
- * @returns Safe error message
- */
-export function getSafeErrorMessage(isDevelopment: boolean, error: any): string {
-  if (isDevelopment && error instanceof Error) {
-    return error.message;
-  }
-  
-  return "An error occurred while processing your request.";
-}
-
-/**
- * Detects potential spam patterns in email addresses
- * @param email - Email address to check
- * @returns boolean indicating if email looks suspicious
- */
-export function isSpamEmail(email: string): boolean {
-  if (!email || typeof email !== 'string') {
-    return true;
-  }
-
-  const suspiciousPatterns = [
-    /^[a-z0-9]{20,}@/, // Very long random-looking local part
-    /^\d+@/, // Numbers only before @
-    /test.*test/i, // Multiple "test" words
-    /admin.*admin/i, // Multiple "admin" words
-    /^(noreply|no-reply)@/i, // No-reply addresses
-    /\+.*\+/, // Multiple + signs
-    /^\w{1,2}@/, // Very short local part (1-2 chars)
-  ];
-
-  return suspiciousPatterns.some(pattern => pattern.test(email));
-}
-
-/**
- * Validates if an email domain exists and is not suspicious
- * @param email - Email address to validate
- * @returns boolean indicating if domain is valid
- */
-export function hasValidDomain(email: string): boolean {
-  if (!email || typeof email !== 'string') {
-    return false;
-  }
-
-  const domain = email.split('@')[1];
-  if (!domain) {
-    return false;
-  }
-
-  // Check for common typos in popular domains
-  const commonDomainTypos = [
-    'gmial.com', 'gmai.com', 'yahooo.com', 'hotmial.com',
-    'outlok.com', 'gmil.com', 'yaho.com'
-  ];
-
-  return !commonDomainTypos.includes(domain.toLowerCase());
 }

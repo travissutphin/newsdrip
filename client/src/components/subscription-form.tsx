@@ -21,6 +21,8 @@ const subscriptionSchema = z.object({
   frequency: z.enum(["daily", "weekly", "monthly"]),
   categoryIds: z.array(z.number()).min(1, "Please select at least one category"),
   website: z.string().optional(), // Honeypot field
+  confirmSubscription: z.boolean().optional(), // Additional honeypot
+  timestamp: z.number().optional(), // Timing validation
 }).refine((data) => {
   if (data.contactMethod === "email" && !data.email) {
     return false;
@@ -38,6 +40,7 @@ type SubscriptionFormData = z.infer<typeof subscriptionSchema>;
 
 export default function SubscriptionForm() {
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [formStartTime] = useState(Date.now());
   const { toast } = useToast();
 
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useQuery({
@@ -62,6 +65,8 @@ export default function SubscriptionForm() {
       frequency: "weekly",
       categoryIds: [],
       website: "", // Honeypot field should remain empty
+      confirmSubscription: false, // Additional honeypot
+      timestamp: formStartTime,
     },
   });
 
@@ -95,7 +100,13 @@ export default function SubscriptionForm() {
   });
 
   const onSubmit = (data: SubscriptionFormData) => {
-    subscribeMutation.mutate(data);
+    // Add timing validation
+    const submissionData = {
+      ...data,
+      timestamp: formStartTime,
+      submissionTime: Date.now() - formStartTime
+    };
+    subscribeMutation.mutate(submissionData);
   };
 
   if (isSubscribed) {
@@ -207,6 +218,47 @@ export default function SubscriptionForm() {
             )}
           />
 
+          {/* Hidden honeypot fields - invisible to users, detectable by bots */}
+          <div className="hidden" aria-hidden="true">
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Website</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Leave this field empty"
+                      {...field}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      data-testid="honeypot-website"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="confirmSubscription"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      tabIndex={-1}
+                      data-testid="honeypot-confirm"
+                    />
+                    <Label>I want to unsubscribe</Label>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* Contact Information */}
           {contactMethod === "email" && (
             <FormField
@@ -220,6 +272,7 @@ export default function SubscriptionForm() {
                       type="email"
                       placeholder="Enter your email address"
                       {...field}
+                      data-testid="input-email"
                     />
                   </FormControl>
                   <FormMessage />
@@ -297,10 +350,10 @@ export default function SubscriptionForm() {
             name="frequency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-[#ffffff]">How often would you like to receive updates?</FormLabel>
+                <FormLabel className="text-base font-medium text-foreground">How often would you like to receive updates?</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="select-frequency">
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -311,26 +364,6 @@ export default function SubscriptionForm() {
                   </SelectContent>
                 </Select>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Honeypot field - hidden from users but visible to bots */}
-          <FormField
-            control={form.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem className="hidden">
-                <FormLabel>Website (leave blank)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Leave this field empty"
-                    {...field}
-                    autoComplete="off"
-                    tabIndex={-1}
-                  />
-                </FormControl>
               </FormItem>
             )}
           />
