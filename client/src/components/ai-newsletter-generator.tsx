@@ -372,7 +372,9 @@ export default function AINewsletterGenerator({ onNewsletterCreated }: AINewslet
 
             <TabsContent value="template" className="space-y-4">
               <div className="space-y-4">
-                <FormLabel>Select Template</FormLabel>
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Select Template
+                </label>
                 <RadioGroup value={selectedTemplate} onValueChange={setSelectedTemplate}>
                   {templates?.map((template) => (
                     <Card key={template.id} className="cursor-pointer hover:bg-muted/50">
