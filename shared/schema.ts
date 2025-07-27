@@ -64,7 +64,6 @@ export const newsletters = pgTable("newsletters", {
   content: text("content").notNull(),
   authorId: varchar("author_id").notNull(),
   status: varchar("status", { length: 20 }).notNull().default("draft"),
-  template: varchar("template", { length: 50 }).notNull().default("classic"),
   sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
