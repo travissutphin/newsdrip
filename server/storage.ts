@@ -50,8 +50,8 @@ export interface IStorage {
   // Newsletter operations
   getNewsletters(): Promise<Newsletter[]>;
   getNewsletter(id: number): Promise<Newsletter | undefined>;
-  createNewsletter(newsletter: InsertNewsletter): Promise<Newsletter>;
-  updateNewsletter(id: number, newsletter: Partial<InsertNewsletter>): Promise<Newsletter>;
+  createNewsletter(newsletter: InsertNewsletter & { sentAt?: Date }): Promise<Newsletter>;
+  updateNewsletter(id: number, newsletter: Partial<InsertNewsletter & { sentAt?: Date }>): Promise<Newsletter>;
   deleteNewsletter(id: number): Promise<void>;
 
   // Newsletter category operations
@@ -228,7 +228,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(newsletters.createdAt));
   }
 
-  async createNewsletter(newsletterData: InsertNewsletter): Promise<Newsletter> {
+  async createNewsletter(newsletterData: InsertNewsletter & { sentAt?: Date }): Promise<Newsletter> {
     const [newsletter] = await db
       .insert(newsletters)
       .values(newsletterData)
@@ -236,7 +236,7 @@ export class DatabaseStorage implements IStorage {
     return newsletter;
   }
 
-  async updateNewsletter(id: number, newsletterData: Partial<InsertNewsletter>): Promise<Newsletter> {
+  async updateNewsletter(id: number, newsletterData: Partial<InsertNewsletter & { sentAt?: Date }>): Promise<Newsletter> {
     const [newsletter] = await db
       .update(newsletters)
       .set({ ...newsletterData, updatedAt: new Date() })

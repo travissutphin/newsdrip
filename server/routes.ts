@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Subscription error:", error);
       res.status(400).json({ 
-        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
+        message: getSafeErrorMessage(error)
       });
     }
   });
@@ -316,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating preferences:", error);
       res.status(400).json({ 
-        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
+        message: getSafeErrorMessage(error)
       });
     }
   });
@@ -514,7 +514,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Newsletter creation error:", error);
       res.status(400).json({ 
-        message: getSafeErrorMessage(process.env.NODE_ENV === 'development', error)
+        message: getSafeErrorMessage(error)
       });
     }
   });
@@ -533,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newsletter = await storage.updateNewsletter(id, {
         ...data,
         status: action === 'send' ? 'sent' : data.status,
-        sentAt: action === 'send' ? new Date() : data.sentAt,
+        sentAt: action === 'send' ? new Date() : undefined,
       });
 
       // Update categories if provided
@@ -877,8 +877,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           <head>
             <title>Newsletter Preferences</title>
             <style>
-              body { font-family: Arial, sans-serif```text
-, max-width: 600px; margin: 50px auto; padding: 20px; }
+              body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
               .form-group { margin: 20px 0; }
               label { display: block; margin: 10px 0 5px 0; font-weight: bold; }
               input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px; }
